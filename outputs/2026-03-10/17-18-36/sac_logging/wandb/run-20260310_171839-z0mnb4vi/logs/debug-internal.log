@@ -1,8 +1,0 @@
-{"time":"2026-03-10T17:18:40.03675752+01:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
-{"time":"2026-03-10T17:18:40.337994662+01:00","level":"INFO","msg":"stream: created new stream","id":"z0mnb4vi"}
-{"time":"2026-03-10T17:18:40.338105573+01:00","level":"INFO","msg":"handler: started","stream_id":"z0mnb4vi"}
-{"time":"2026-03-10T17:18:40.338220135+01:00","level":"INFO","msg":"stream: started","id":"z0mnb4vi"}
-{"time":"2026-03-10T17:18:40.338862764+01:00","level":"INFO","msg":"writer: started","stream_id":"z0mnb4vi"}
-{"time":"2026-03-10T17:18:40.338918165+01:00","level":"INFO","msg":"sender: started","stream_id":"z0mnb4vi"}
-{"time":"2026-03-10T17:19:06.146855784+01:00","level":"INFO","msg":"stream: closing","id":"z0mnb4vi"}
-{"time":"2026-03-10T17:19:10.340515713+01:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"}
