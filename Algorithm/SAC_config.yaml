@@ -5,10 +5,10 @@ hydra:
 
 # environment and task
 env:
-  name: HalfCheetah-v4
+  name: Reacher-v3
   task: ""
-  library: gymnasium
-  max_episode_steps: 1000
+  library: metaworld
+  max_episode_steps: None
   pixel_input: False
   seed: 42
 
