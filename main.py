@@ -17,12 +17,78 @@ from torchrl.envs.transforms import Compose, InitTracker, StepCounter, DoubleToF
 from Algorithm.SAC import SAC, make_sac_agent
 from Algorithm.utils import make_environment
 
+from torchrl.envs.transforms import FrameSkipTransform, CatFrames, ToTensorImage, Resize
+from torchrl.record import PixelRenderTransform
+
+from torchrl.envs.transforms import Transform
+from tensordict import TensorDictBase
+import numpy as np
+from torchrl.data.tensor_specs import Bounded
+class Custom(Transform):
+    def __init__(self, in_keys=None, out_keys=None, frame_shape=(3, 480, 480)):
+        if in_keys is None:
+            in_keys = ["pixels"]
+        if out_keys is None:
+            out_keys = ["pixels"]
+        self.frame_shape = frame_shape
+        super().__init__(in_keys=in_keys, out_keys=out_keys)
+
+    def _step(self, tensordict: TensorDictBase) -> TensorDictBase:
+        pixels = tensordict.get(("next", self.in_keys[0]))
+        normalized_pixels = self._process(pixels)
+        tensordict.set(("next", self.out_keys[0]), normalized_pixels)
+        return tensordict
+
+    def _reset(self, tensordict: TensorDictBase, tensordict_reset: TensorDictBase) -> TensorDictBase:
+        pixels = tensordict_reset.get(self.in_keys[0])
+        normalized_pixels = self._process(pixels)
+        tensordict_reset.set(self.out_keys[0], normalized_pixels)
+        return tensordict_reset
+    
+    def _process(self, frame):
+        if type(frame).__name__ in ["NonTensorStack", "NonTensorData"]:
+            raw_numpy_list = frame.tolist()
+            frame = torch.as_tensor(np.array(raw_numpy_list))
+        elif not isinstance(frame, torch.Tensor):
+            frame = torch.as_tensor(frame)
+        frame = frame.float()/255.0
+        if frame.ndim == 4:
+            frame = frame.permute(0, 3, 1, 2)
+        elif frame.ndim == 3:
+            frame = frame.permute(2, 0, 1)
+        return frame
+    
+    def transform_observation_spec(self, observation_spec):
+        old_spec = observation_spec[self.out_keys[0]]
+        shape = torch.Size(observation_spec.shape + self.frame_shape)
+        low_tensor = torch.zeros(shape, device=old_spec.device, dtype=torch.float32)
+        high_tensor = torch.ones(shape, device=old_spec.device, dtype=torch.float32)
+        new_spec = Bounded(
+            low=low_tensor,
+            high=high_tensor,
+            shape=shape,
+            dtype=torch.float32,
+            device=old_spec.device
+        )
+        observation_spec[self.out_keys[0]] = new_spec
+        return observation_spec
 
 @hydra.main(version_base="1.1", config_path="Algorithm", config_name="SAC_config")
 def main(cfg):
     # 1. Prepariamo gli ambienti usando le utility
-    train_env, eval_env = make_environment(device="cuda:0")
-
+    wrapper_pre_parallel_env=[FrameSkipTransform(frame_skip=2)]
+    wrapper_post_parallel_env=[
+        PixelRenderTransform(
+                    out_keys=["pixels"],
+                    as_non_tensor=False
+                ),
+        Custom(),
+        Resize(w=224, h=224, in_keys=["pixels"]),
+        CatFrames(N=4, dim=-3, in_keys=["pixels"]),
+        ]
+    train_env, eval_env = make_environment(cfg, wrapper_pre_parallel_env=wrapper_pre_parallel_env, wrapper_post_parallel_env=wrapper_post_parallel_env)
+    td = train_env.reset()
+    breakpoint()
     train_env = TransformedEnv(
         train_env,
         Compose(

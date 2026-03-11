@@ -5,11 +5,11 @@ hydra:
 
 # environment and task
 env:
-  name: Reacher-v3
+  name: reach-v3
   task: ""
   library: metaworld
-  max_episode_steps: None
-  pixel_input: False
+  max_episode_steps: 150
+  pixel_input: True
   seed: 42
 
 # collector
@@ -19,7 +19,7 @@ collector:
   frames_per_batch: 1000
   init_env_steps: 1000
   device:
-  env_per_collector: 8
+  env_per_collector: 2
   reset_at_each_iter: False
 
 # replay buffer
