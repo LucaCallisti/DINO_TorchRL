@@ -1,0 +1,11 @@
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 134, in main
+    trainer = SAC(
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 45, in __init__
+    self.loss_module, self.target_net_updater = self._make_loss()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 262, in _make_loss
+    target_net_updater = SoftUpdate(loss_module, eps=self.cfg.optim.target_update_polyak)
+NameError: name 'SoftUpdate' is not defined
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

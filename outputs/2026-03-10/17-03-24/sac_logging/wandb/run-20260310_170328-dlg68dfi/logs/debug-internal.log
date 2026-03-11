@@ -1,0 +1,11 @@
+{"time":"2026-03-10T17:03:29.271067396+01:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-03-10T17:03:29.689543855+01:00","level":"INFO","msg":"stream: created new stream","id":"dlg68dfi"}
+{"time":"2026-03-10T17:03:29.689620916+01:00","level":"INFO","msg":"handler: started","stream_id":"dlg68dfi"}
+{"time":"2026-03-10T17:03:29.68984491+01:00","level":"INFO","msg":"stream: started","id":"dlg68dfi"}
+{"time":"2026-03-10T17:03:29.68987117+01:00","level":"INFO","msg":"writer: started","stream_id":"dlg68dfi"}
+{"time":"2026-03-10T17:03:29.68986829+01:00","level":"INFO","msg":"sender: started","stream_id":"dlg68dfi"}
+{"time":"2026-03-10T17:05:04.165745961+01:00","level":"INFO","msg":"stream: closing","id":"dlg68dfi"}
+{"time":"2026-03-10T17:05:04.614770633+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-03-10T17:05:06.005705426+01:00","level":"INFO","msg":"handler: closed","stream_id":"dlg68dfi"}
+{"time":"2026-03-10T17:05:06.005832828+01:00","level":"INFO","msg":"sender: closed","stream_id":"dlg68dfi"}
+{"time":"2026-03-10T17:05:06.005844369+01:00","level":"INFO","msg":"stream: closed","id":"dlg68dfi"}

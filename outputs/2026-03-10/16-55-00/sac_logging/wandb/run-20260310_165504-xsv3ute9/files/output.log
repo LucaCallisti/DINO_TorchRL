@@ -1,0 +1,11 @@
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 134, in main
+    trainer = SAC(
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 48, in __init__
+    self.optimizer = self._make_optimizers()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 269, in _make_optimizers
+    opt_actor = optim.Adam(self.model[0].parameters(), lr=self.cfg.optim.lr)
+NameError: name 'optim' is not defined
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

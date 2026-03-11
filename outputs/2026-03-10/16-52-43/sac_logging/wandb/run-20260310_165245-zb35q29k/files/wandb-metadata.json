@@ -1,0 +1,11 @@
+{
+  "os":  "Linux-5.15.0-125-generic-x86_64-with-glibc2.35",
+  "python":  "CPython 3.10.12",
+  "startedAt":  "2026-03-10T15:52:45.676512Z",
+  "program":  "/home/l.callisti/DINO_Torch_RL/Code/main.py",
+  "email":  "luca.callisti@gmail.com",
+  "root":  "sac_logging",
+  "host":  "trevor",
+  "executable":  "/home/l.callisti/CLIP+RL/CLIP_RL/bin/python",
+  "writerId":  "62cpjr871uq0wc5p049hl4oyaog2yubd"
+}
