@@ -89,29 +89,11 @@ def main(cfg):
         Resize(w=224, h=224, in_keys=["pixels"]),
         UnsqueezeTransform(-4, in_keys=["pixels"]),
         CatFrames(N=4, dim=-4, in_keys=["pixels"]),
-        ExtractorTransform(extractor=extractor),
+        ExtractorTransform(device=cfg.network.device, extractor=extractor),
         ]
     train_env, eval_env = make_environment(cfg, wrapper_pre_parallel_env=wrapper_pre_parallel_env, wrapper_post_parallel_env=wrapper_post_parallel_env)
     td = train_env.reset()
     breakpoint()
-    train_env = TransformedEnv(
-        train_env,
-        Compose(
-            InitTracker(),
-            StepCounter(),
-            DoubleToFloat(),  
-            RewardSum(),
-        ),
-    )
-    eval_env = TransformedEnv(
-        eval_env,
-        Compose(
-            InitTracker(),
-            StepCounter(),
-            DoubleToFloat(),  
-            RewardSum(),
-        ),
-    )
     
     # 2. Creiamo l'agente (modelli actor e qvalue)
     # Qui potresti chiamare una tua funzione custom o quella in utils.py

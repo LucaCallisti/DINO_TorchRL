@@ -15,7 +15,7 @@ from tensordict import TensorDictBase
 import numpy as np
 from torchrl.data.tensor_specs import UnboundedContinuous
 class ExtractorTransform(Transform):
-    def __init__(self, extractor, dummy_obs_shape = (1, 4, 3, 224, 224), in_keys=None, out_keys=None):
+    def __init__(self, device, extractor, dummy_obs_shape = (1, 4, 3, 224, 224), in_keys=None, out_keys=None):
         if in_keys is None:
             in_keys = ["pixels"]
         if out_keys is None:
@@ -24,8 +24,9 @@ class ExtractorTransform(Transform):
         super().__init__(in_keys=in_keys, out_keys=out_keys)
         
         self.extractor = extractor
+        self.extractor.to(device)
         self.extractor.eval()
-        
+
         dummy_obs = torch.zeros(dummy_obs_shape, device=extractor.device)
         with torch.no_grad():
             dummy_output = self.extractor(dummy_obs)
@@ -45,11 +46,16 @@ class ExtractorTransform(Transform):
 
     def _process(self, obs):
         obs_device = obs.device
-        obs = obs.to(self.extractor.device)
         with torch.no_grad():
             if next(self.extractor.parameters()).device != obs_device:
-                self.extractorto(obs_device)
+                self.extractor.to(obs_device)
                 print('spostamento modello gpu')
+            for name, param in self.extractor.named_parameters():
+                print(name, param.device)
+            for name, buffer in self.extractor.named_buffers():
+                print(name, buffer.device)
+            print("obs.device:", obs.device)
+            breakpoint()
             embeddings = self.extractor(obs)
         return embeddings.to(obs_device)
 
@@ -76,7 +82,7 @@ class ExtractorTransform(Transform):
     
 class DinoExtractor(nn.Module):
     MODELS = {
-        "vits16_ft": ("dinov3_vits16",  "/home/l.callisti/CLIP+RL/rl_clip/DINO/dino_finetuned_multicrop_200e.pth",  384),
+        "vits16_ft": ("dinov3_vits16",  "/home/a.dorizza/GITHUB/DINO_TorchRL/DINO/dino_finetuned_multicrop_200e.pth",  384),
         "vits16":  ("dinov3_vits16",  "DINO/dinov3_vits16_pretrain_lvd1689m-08c60483.pth",  384),
         "vitb16":  ("dinov3_vitb16",  "DINO/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth",  768),
     }
@@ -89,7 +95,7 @@ class DinoExtractor(nn.Module):
         hub_name, weights_path, self.embed_dim = self.MODELS[model_name]
 
         self.model = torch.hub.load(
-            "/home/l.callisti/CLIP+RL/rl_clip/DINO/dinov3",
+            "/home/a.dorizza/GITHUB/DINO_TorchRL/dinov3",
             hub_name,
             source="local",
             weights=weights_path
