@@ -1,3 +1,8 @@
+
+hydra:
+  run:
+    dir: ./output/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
 # environment and task
 env:
   name: HalfCheetah-v4
