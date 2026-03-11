@@ -17,8 +17,9 @@ from torchrl.envs.transforms import Compose, InitTracker, StepCounter, DoubleToF
 from Algorithm.SAC import SAC, make_sac_agent
 from Algorithm.utils import make_environment
 
-from torchrl.envs.transforms import FrameSkipTransform, CatFrames, ToTensorImage, Resize
+from torchrl.envs.transforms import FrameSkipTransform, CatFrames, ToTensorImage, Resize, UnsqueezeTransform
 from torchrl.record import PixelRenderTransform
+from Model.extractor import ExtractorTransform, DinoExtractor
 
 from torchrl.envs.transforms import Transform
 from tensordict import TensorDictBase
@@ -48,10 +49,10 @@ class Custom(Transform):
     def _process(self, frame):
         if type(frame).__name__ in ["NonTensorStack", "NonTensorData"]:
             raw_numpy_list = frame.tolist()
-            frame = torch.as_tensor(np.array(raw_numpy_list))
+            frame = torch.stack([torch.from_numpy(arr) for arr in raw_numpy_list])
         elif not isinstance(frame, torch.Tensor):
             frame = torch.as_tensor(frame)
-        frame = frame.float()/255.0
+        frame = frame.to(torch.float32).div_(255.0)
         if frame.ndim == 4:
             frame = frame.permute(0, 3, 1, 2)
         elif frame.ndim == 3:
@@ -76,6 +77,8 @@ class Custom(Transform):
 @hydra.main(version_base="1.1", config_path="Algorithm", config_name="SAC_config")
 def main(cfg):
     # 1. Prepariamo gli ambienti usando le utility
+    extractor = DinoExtractor(device=cfg.network.device, model_name='vits16_ft', output='Attention_Pooling')
+
     wrapper_pre_parallel_env=[FrameSkipTransform(frame_skip=2)]
     wrapper_post_parallel_env=[
         PixelRenderTransform(
@@ -84,7 +87,9 @@ def main(cfg):
                 ),
         Custom(),
         Resize(w=224, h=224, in_keys=["pixels"]),
-        CatFrames(N=4, dim=-3, in_keys=["pixels"]),
+        UnsqueezeTransform(-4, in_keys=["pixels"]),
+        CatFrames(N=4, dim=-4, in_keys=["pixels"]),
+        ExtractorTransform(extractor=extractor),
         ]
     train_env, eval_env = make_environment(cfg, wrapper_pre_parallel_env=wrapper_pre_parallel_env, wrapper_post_parallel_env=wrapper_post_parallel_env)
     td = train_env.reset()

@@ -5,65 +5,78 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from transformers import CLIPModel, CLIPProcessor
 import numpy as np
 import torch
-from stable_baselines3.common.vec_env import VecEnvWrapper
 from gymnasium import spaces
 from torchvision.transforms import v2
 import torch.nn.functional as F
+from torchrl.envs.transforms import Transform
 
+from torchrl.envs.transforms import Transform
+from tensordict import TensorDictBase
+import numpy as np
+from torchrl.data.tensor_specs import UnboundedContinuous
+class ExtractorTransform(Transform):
+    def __init__(self, extractor, dummy_obs_shape = (1, 4, 3, 224, 224), in_keys=None, out_keys=None):
+        if in_keys is None:
+            in_keys = ["pixels"]
+        if out_keys is None:
+            out_keys = ["pixels"] # Sovrascrive i pixel con gli embedding
             
-class VecExtractorWrapper(VecEnvWrapper):
-    def __init__(self, venv, extractor):
-        super().__init__(venv)
+        super().__init__(in_keys=in_keys, out_keys=out_keys)
+        
         self.extractor = extractor
-        dummy_obs = torch.zeros((1, 4, 3, 224, 224)).to(extractor.device)   # 4 stacked frame
+        self.extractor.eval()
+        
+        dummy_obs = torch.zeros(dummy_obs_shape, device=extractor.device)
         with torch.no_grad():
             dummy_output = self.extractor(dummy_obs)
-        self.observation_space['pixels'] = spaces.Box(
-            low=-np.inf, 
-            high=np.inf, 
-            shape=dummy_output.shape[1:], 
-            dtype=np.float32
-        )
-        self.observation_space['state']=spaces.Box(low=-np.inf, high=np.inf, shape=(4, 4,), dtype=np.float32)   # il primo 4 è per il numero di frame
-    def reset(self):
-        obs = self.venv.reset()
-        return self._process_obs(obs)
-    def step_wait(self):
-        obs, rewards, dones, infos = self.venv.step_wait()
-        for info in infos:
-            if "terminal_observation" in info:
-                last_obs = {k : np.expand_dims(v, axis = 0) for k, v in info['terminal_observation'].items()}
-                processed_obs = self._process_obs(last_obs)
-                info['terminal_observation'] = {k: v.squeeze(0) for k, v in processed_obs.items()}                
+            self.embedding_shape = dummy_output.shape[1:]
+    
+    def _step(self, tensordict: TensorDictBase) -> TensorDictBase:
+        pixels = tensordict.get(("next", self.in_keys[0]))
+        normalized_pixels = self._process(pixels)
+        tensordict.set(("next", self.out_keys[0]), normalized_pixels)
+        return tensordict
 
-        return self._process_obs(obs), rewards, dones, infos
-    def _process_obs(self, obs):
-        pixels_tensor = torch.from_numpy(obs['pixels']).to(self.extractor.device, non_blocking=True)    # B, N_frame, H, W, C
-        pixels_tensor = self._resize_images(pixels_tensor)
+    def _reset(self, tensordict: TensorDictBase, tensordict_reset: TensorDictBase) -> TensorDictBase:
+        pixels = tensordict_reset.get(self.in_keys[0])
+        normalized_pixels = self._process(pixels)
+        tensordict_reset.set(self.out_keys[0], normalized_pixels)
+        return tensordict_reset
+
+    def _process(self, obs):
+        obs_device = obs.device
+        obs = obs.to(self.extractor.device)
         with torch.no_grad():
-            with torch.autocast(device_type=self.extractor.device.type, dtype=torch.bfloat16):
-                embeddings = self.extractor(pixels_tensor)
-        obs = obs.copy() # Avoid modifying original dict if shared
-        obs['pixels'] = embeddings.float().cpu().numpy().astype(np.float32)
-        obs['state'] = obs['state'][:, :, :4].astype(np.float32)
-        return obs
+            if next(self.extractor.parameters()).device != obs_device:
+                self.extractorto(obs_device)
+                print('spostamento modello gpu')
+            embeddings = self.extractor(obs)
+        return embeddings.to(obs_device)
 
-    def _resize_images(self, images: torch.Tensor) -> torch.Tensor:
-        '''
-        images: (B, N_frame, H, W, C)
-        return: (B*N_frame, C, 224, 224)
-        '''
-        images = images.float() / 255.0
-        images = images.permute(0, 1, 4, 2, 3).contiguous()   # B, N_frame, C, H, W
-        old_shape = images.shape
-        images = images.reshape((-1, *images.shape[2:]))   # B*N_frame, C, H, W
-        images = F.interpolate(images, size=(224, 224), mode='bilinear', align_corners=False)
-        return images.reshape(old_shape[0], old_shape[1], *images.shape[1:])
+    def transform_observation_spec(self, observation_spec):
+        old_spec = observation_spec[self.out_keys[0]]
+        batch_shape = observation_spec.shape
+
+        new_shape = batch_shape + self.embedding_shape
+        
+        new_spec = UnboundedContinuous(
+            shape=new_shape,
+            dtype=torch.float32,
+            device=old_spec.device
+        )
+        
+        observation_spec.set(self.out_keys[0], new_spec)
+        return observation_spec
+
+    def to(self, device):
+        super().to(device)
+        return self
+    
     
     
 class DinoExtractor(nn.Module):
     MODELS = {
-        "vits16_ft": ("dinov3_vits16",  "DINO/dino_finetuned_multicrop_200e.pth",  384),
+        "vits16_ft": ("dinov3_vits16",  "/home/l.callisti/CLIP+RL/rl_clip/DINO/dino_finetuned_multicrop_200e.pth",  384),
         "vits16":  ("dinov3_vits16",  "DINO/dinov3_vits16_pretrain_lvd1689m-08c60483.pth",  384),
         "vitb16":  ("dinov3_vitb16",  "DINO/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth",  768),
     }
@@ -76,7 +89,7 @@ class DinoExtractor(nn.Module):
         hub_name, weights_path, self.embed_dim = self.MODELS[model_name]
 
         self.model = torch.hub.load(
-            "DINO/dinov3",
+            "/home/l.callisti/CLIP+RL/rl_clip/DINO/dinov3",
             hub_name,
             source="local",
             weights=weights_path
@@ -84,16 +97,12 @@ class DinoExtractor(nn.Module):
         self.model.eval()
         for param in self.model.parameters():
             param.requires_grad = False
-        self.model = torch.compile(self.model)
+        self.model = torch.compile(self.model).to(device)
 
-        def make_transform():
-            normalize = v2.Normalize(
-                mean=(0.485, 0.456, 0.406),
-                std=(0.229, 0.224, 0.225),
-            )
-            return v2.Compose([normalize])
-        self.transform = make_transform()
-    
+        self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
+        self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
+        self.to(device)
+        
     def forward(self, img):
         '''
         img: (B, N_frames, C, H, W)
@@ -101,8 +110,9 @@ class DinoExtractor(nn.Module):
         with torch.no_grad():
             init_shape = img.shape # (B, N_frames, C, H, W)
             image = img.reshape(-1, init_shape[-3], init_shape[-2], init_shape[-1])
-            img_tensor = self.transform(image)
-            features = self.model.forward_features(img_tensor, masks=None)
+            breakpoint()
+            image = (image - self.mean) / self.std
+            features = self.model.forward_features(image, masks=None)
             if self.output == 'cls':
                 output = features['x_norm_clstoken']
                 output = output.reshape(init_shape[0], init_shape[1], -1)

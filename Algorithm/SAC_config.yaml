@@ -62,4 +62,4 @@ network:
   activation: relu
   default_policy_scale: 1.0
   scale_lb: 0.0001
-  device:
+  device: 'cuda:0'
