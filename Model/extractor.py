@@ -9,6 +9,7 @@ from gymnasium import spaces
 from torchvision.transforms import v2
 import torch.nn.functional as F
 from torchrl.envs.transforms import Transform
+from pathlib import Path
 
 from torchrl.envs.transforms import Transform
 from tensordict import TensorDictBase
@@ -55,7 +56,6 @@ class ExtractorTransform(Transform):
             for name, buffer in self.extractor.named_buffers():
                 print(name, buffer.device)
             print("obs.device:", obs.device)
-            breakpoint()
             embeddings = self.extractor(obs)
         return embeddings.to(obs_device)
 
@@ -82,7 +82,7 @@ class ExtractorTransform(Transform):
     
 class DinoExtractor(nn.Module):
     MODELS = {
-        "vits16_ft": ("dinov3_vits16",  "/home/a.dorizza/GITHUB/DINO_TorchRL/DINO/dino_finetuned_multicrop_200e.pth",  384),
+        "vits16_ft": ("dinov3_vits16",  "DINO/dino_finetuned_multicrop_200e.pth",  384),
         "vits16":  ("dinov3_vits16",  "DINO/dinov3_vits16_pretrain_lvd1689m-08c60483.pth",  384),
         "vitb16":  ("dinov3_vitb16",  "DINO/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth",  768),
     }
@@ -93,12 +93,14 @@ class DinoExtractor(nn.Module):
         self.output = output
 
         hub_name, weights_path, self.embed_dim = self.MODELS[model_name]
+        current_file_path = Path(__file__).resolve()
+        project_root = current_file_path.parent.parent
 
         self.model = torch.hub.load(
-            "/home/a.dorizza/GITHUB/DINO_TorchRL/dinov3",
+            str(project_root / "dinov3"),
             hub_name,
             source="local",
-            weights=weights_path
+            weights=str(project_root / weights_path)
         ).to(device)
         self.model.eval()
         for param in self.model.parameters():
@@ -116,7 +118,6 @@ class DinoExtractor(nn.Module):
         with torch.no_grad():
             init_shape = img.shape # (B, N_frames, C, H, W)
             image = img.reshape(-1, init_shape[-3], init_shape[-2], init_shape[-1])
-            breakpoint()
             image = (image - self.mean) / self.std
             features = self.model.forward_features(image, masks=None)
             if self.output == 'cls':
