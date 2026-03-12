@@ -19,12 +19,15 @@ from Algorithm.utils import make_environment
 
 from torchrl.envs.transforms import FrameSkipTransform, CatFrames, ToTensorImage, Resize, UnsqueezeTransform
 from torchrl.record import PixelRenderTransform
-from Model.extractor import ExtractorTransform, DinoExtractor
+from Model.extractor import ExtractorTransform, DinoExtractor, Model
 
 from torchrl.envs.transforms import Transform
 from tensordict import TensorDictBase
 import numpy as np
 from torchrl.data.tensor_specs import Bounded
+
+
+
 class Custom(Transform):
     def __init__(self, in_keys=None, out_keys=None, frame_shape=(3, 480, 480)):
         if in_keys is None:
@@ -95,9 +98,15 @@ def main(cfg):
     td = train_env.reset()
     breakpoint()
     
+
+
+    backbone_actor = Model(input_dim=16, n_frame=4, device=cfg.network.device)
+    backbone_actor.init_lazy_weights(td)
+
+
     # 2. Creiamo l'agente (modelli actor e qvalue)
     # Qui potresti chiamare una tua funzione custom o quella in utils.py
-    model, actor_exploration = make_sac_agent(train_env, eval_env, device="cuda:0")
+    model, actor_exploration = make_sac_agent(cfg, train_env, backbone_actor=Model, device="cuda:0")
 
     # 3. Inizializziamo il Trainer SAC con i pezzi pronti
     trainer = SAC(

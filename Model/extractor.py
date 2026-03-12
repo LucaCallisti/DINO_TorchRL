@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from transformers import CLIPModel, CLIPProcessor
 import numpy as np
 import torch
@@ -184,13 +183,18 @@ class CNN_backbone(nn.Module):
         cnn_features = self.cnn(x_stacked)
         return cnn_features    
 
-class Model(BaseFeaturesExtractor):
-    def __init__(self, observation_space, input_dim : int, n_frame: int, device: torch.device, output_DINO : str = 'cls', model_input : str = 'State-Image'):
-        super().__init__(observation_space, features_dim=128)
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self, input_dim: int, n_frame: int, device: torch.device,
+                 output_DINO: str = 'cls', model_input: str = 'State-Image'):
+        super().__init__()
 
         self.n_frame = n_frame
         embed_dim = 384
-        self.output_DINO = output_DINO
+        self.output_DINO = output_DINO 
         
         if self.output_DINO == 'Attention_Pooling':
             self.backbone = Attention_Pooling(embed_dim, num_heads=4)
@@ -203,18 +207,21 @@ class Model(BaseFeaturesExtractor):
             self.backbone = nn.Identity()
         
         self.model_input = model_input
-        self.fc1_pixels = nn.Linear(input_dim, 1024)
+
+        # LazyLinear: dimensione input definita al primo forward
         if self.model_input == 'State-Image':
-            self.fc1_state = nn.Linear(16, 128)
-            self.fc2 = nn.Linear(1024+128, 512)
+            self.fc1_state = nn.LazyLinear(128)
+            self.fc1_pixels = nn.LazyLinear(128)  # aggiunto perché usi fc1_pixels nel forward
+            self.fc2 = nn.LazyLinear(512)
         else:
-            self.fc2 = nn.Linear(1024, 512)
-        self.fc3 = nn.Linear(512, 128)
+            self.fc1_pixels = nn.LazyLinear(512)
+            self.fc2 = nn.LazyLinear(512)
 
-            
-        self._init_weights()
+        self.fc3 = nn.LazyLinear(128)
 
-    def _init_weights(self):
+    def init_lazy_weights(self, sample_input):
+        """Passa un input dummy per inizializzare i LazyLinear e applicare orthogonal"""
+        _ = self.forward(sample_input)  # inizializza tutti i LazyLinear
         list_layer = [self.fc1_pixels, self.fc2, self.fc3]
         if hasattr(self, 'fc1_state'):
             list_layer.append(self.fc1_state)
@@ -226,24 +233,24 @@ class Model(BaseFeaturesExtractor):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         state = x['state']  # B, N_frame, s
-        state = state.reshape((state.shape[0], -1)) # B, N_frame*s
+        state = state.reshape((state.shape[0], -1))  # B, N_frame*s
 
         image = x['pixels'] 
         x_image = self.backbone(image)
         x_image = self.fc1_pixels(x_image)
-        x_image = F.relu(x_image, inplace = True)
+        x_image = F.relu(x_image, inplace=True)
 
         if self.model_input == 'State-Image':
             x_state = self.fc1_state(state)
             x_state = F.relu(x_state, inplace=True)
-            x = torch.cat([x_state, x_image], dim = 1)
+            x = torch.cat([x_state, x_image], dim=1)
         else:
             x = x_image
 
         x = self.fc2(x)
-        x = F.relu(x, inplace = True)
+        x = F.relu(x, inplace=True)
         
         x = self.fc3(x)
-        x = F.relu(x, inplace = True)
+        x = F.relu(x, inplace=True)
 
         return x
