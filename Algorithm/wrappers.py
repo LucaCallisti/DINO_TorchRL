@@ -2,7 +2,6 @@ import torch
 from torchrl.envs import Transform
 from torchrl.data.tensor_specs import Bounded, UnboundedContinuous
 from tensordict import TensorDictBase
-from tensordict import NonTensorStack, NonTensorData
 
 class ToCHWTransform(Transform):
     def __init__(self, in_keys=None, out_keys=None, frame_shape=(3, 480, 480)):
@@ -78,7 +77,6 @@ class ObservationSliceTransform(Transform):
 
     def transform_observation_spec(self, observation_spec):
         old_spec = observation_spec[self.out_keys[0]]
-        batch_shape = observation_spec.shape
         new_shape = observation_spec.shape + (self.slice_len,)
         new_spec = UnboundedContinuous(
             shape=new_shape,

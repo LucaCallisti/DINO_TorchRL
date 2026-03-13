@@ -1,0 +1,132 @@
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_base.py:1045: DeprecationWarning: SyncDataCollector has been deprecated and will be removed in v0.13. Please use Collector instead.
+  warnings.warn(
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/envs/batched_envs.py:2538: UserWarning: Sending a seeded ParallelEnv to another device requires re-seeding it. Re-seeding envs to [42, 1445067485, 3334094167, 3585780589, 2792652595, 3481998204, 395747745, 79072177].
+  warn(
+/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py:102: UserWarning: CudaGraphModule is experimental and may lead to silently wrong results. Use with caution.
+  warnings.warn(
+2026-03-13 10:09:51,269 [tensordict][INFO] Setting up CudaGraphModule with stream <torch.cuda.Stream device=cuda:0 cuda_stream=0x564589792000> on device None.
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/nn/cudagraphs.py:212: UserWarning: Tensordict is registered in PyTree. This is incompatible with CudaGraphModule. Removing TDs from PyTree. To silence this warning, call tensordict.nn.functional_modules._exclude_td_from_pytree().set() or set the environment variable `EXCLUDE_TD_FROM_PYTREE=1`. This operation is irreversible.
+  warnings.warn(
+  0%|                                                                            | 0/1000000 [00:00<?, ?it/s]Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_single.py", line 1759, in rollout
+    result = torch.stack(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 698, in __torch_function__
+    return TD_HANDLED_FUNCTIONS[func](*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 816, in _stack
+    out._stack_onto_(list_of_tensordicts, dim)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 2732, in _stack_onto_
+    new_dest = torch.stack(
+RuntimeError: Error: accessing tensor output of CUDAGraphs that has been overwritten by a subsequent run. Stack trace: File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 430, in forward
+    x = module(x)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/nn/distributions/continuous.py", line 85, in forward
+    loc, scale = tensor.chunk(2, -1). To prevent overwriting, clone the tensor outside of torch.compile() or call torch.compiler.cudagraph_mark_step_begin() before each model invocation.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 70, in <module>
+    main()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 67, in main
+    trainer.learn()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 147, in learn
+    tensordict = next(collector_iter)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_base.py", line 952, in __iter__
+    yield from self.iterator()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_single.py", line 1406, in iterator
+    tensordict_out = self.rollout()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/_utils.py", line 607, in unpack_rref_and_invoke_function
+    return func(self, *args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_single.py", line 1767, in rollout
+    result = torch.stack(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 698, in __torch_function__
+    return TD_HANDLED_FUNCTIONS[func](*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 816, in _stack
+    out._stack_onto_(list_of_tensordicts, dim)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 2732, in _stack_onto_
+    new_dest = torch.stack(
+RuntimeError: Error: accessing tensor output of CUDAGraphs that has been overwritten by a subsequent run. Stack trace: File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 430, in forward
+    x = module(x)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/nn/distributions/continuous.py", line 85, in forward
+    loc, scale = tensor.chunk(2, -1). To prevent overwriting, clone the tensor outside of torch.compile() or call torch.compiler.cudagraph_mark_step_begin() before each model invocation.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_single.py", line 1759, in rollout
+    result = torch.stack(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 698, in __torch_function__
+    return TD_HANDLED_FUNCTIONS[func](*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 816, in _stack
+    out._stack_onto_(list_of_tensordicts, dim)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 2732, in _stack_onto_
+    new_dest = torch.stack(
+RuntimeError: Error: accessing tensor output of CUDAGraphs that has been overwritten by a subsequent run. Stack trace: File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 430, in forward
+    x = module(x)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/nn/distributions/continuous.py", line 85, in forward
+    loc, scale = tensor.chunk(2, -1). To prevent overwriting, clone the tensor outside of torch.compile() or call torch.compiler.cudagraph_mark_step_begin() before each model invocation.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 70, in <module>
+    main()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 67, in main
+    trainer.learn()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 147, in learn
+    tensordict = next(collector_iter)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_base.py", line 952, in __iter__
+    yield from self.iterator()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_single.py", line 1406, in iterator
+    tensordict_out = self.rollout()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/_utils.py", line 607, in unpack_rref_and_invoke_function
+    return func(self, *args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_single.py", line 1767, in rollout
+    result = torch.stack(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 698, in __torch_function__
+    return TD_HANDLED_FUNCTIONS[func](*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 816, in _stack
+    out._stack_onto_(list_of_tensordicts, dim)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 2732, in _stack_onto_
+    new_dest = torch.stack(
+RuntimeError: Error: accessing tensor output of CUDAGraphs that has been overwritten by a subsequent run. Stack trace: File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 430, in forward
+    x = module(x)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/nn/distributions/continuous.py", line 85, in forward
+    loc, scale = tensor.chunk(2, -1). To prevent overwriting, clone the tensor outside of torch.compile() or call torch.compiler.cudagraph_mark_step_begin() before each model invocation.

@@ -7,18 +7,15 @@ import tqdm
 import numpy as np
 from tensordict import TensorDict
 from tensordict.nn import CudaGraphModule
-from torchrl._utils import compile_with_warmup, get_available_device, timeit
+from torchrl._utils import compile_with_warmup, timeit
 from torchrl.envs.utils import ExplorationType, set_exploration_type
-from torchrl.objectives import group_optimizers
 from torchrl.record.loggers import generate_exp_name, get_logger
 from torchrl.objectives.sac import SACLoss
 from torchrl.objectives import SoftUpdate
 import torch.optim as optim
 from torchrl.collectors import SyncDataCollector
 from torchrl.data import (
-    LazyMemmapStorage,
     LazyTensorStorage,
-    TensorDictPrioritizedReplayBuffer,
     TensorDictReplayBuffer,
 )
 import torch.nn as nn
@@ -83,7 +80,6 @@ class SAC:
     def _build_update_fn(self):
         """Costruisce e avvolge (compile/cudagraph) la funzione di update per efficienza."""
         def update(sampled_tensordict):
-            sampled_tensordict = sampled_tensordict.clone().to(self.device)
             loss_td = self.loss_module(sampled_tensordict)
             actor_loss = loss_td["loss_actor"]
             q_loss = loss_td["loss_qvalue"]
@@ -94,6 +90,7 @@ class SAC:
             self.optimizer.zero_grad(set_to_none=True)
 
             self.target_net_updater.step()
+            actor_loss = q_loss = alpha_loss = None
             return loss_td.detach()
 
         if self.cfg.compile.compile:
@@ -129,6 +126,7 @@ class SAC:
         
         init_random_frames = self.cfg.collector.init_random_frames
         num_updates = int(self.cfg.collector.frames_per_batch * self.cfg.optim.utd_ratio)
+        use_cudagraph_mark = bool(self.cfg.compile.cudagraphs)
         prb = self.cfg.replay_buffer.prb
         eval_iter = self.cfg.logger.eval_iter
         frames_per_batch = self.cfg.collector.frames_per_batch
@@ -139,15 +137,13 @@ class SAC:
         self.num_timesteps = 0
 
         for i in range(total_iter):
-            timeit.printevery(num_prints=1000, total_count=total_iter, erase=True)
+            timeit.printevery(num_prints=100_000, total_count=total_iter, erase=True)
 
             callback.on_rollout_start()
 
             # --- COLLECT ---
             with timeit("collect"):
                 tensordict = next(collector_iter)
-
-            self.collector.update_policy_weights_()
             
             current_frames = tensordict.numel()
             self.num_timesteps += current_frames
@@ -174,13 +170,19 @@ class SAC:
                             sampled_tensordict = self.replay_buffer.sample()
 
                         with timeit("update"):
-                            torch.compiler.cudagraph_mark_step_begin()
-                            loss_td = self._update_fn(sampled_tensordict).clone()
+                            if use_cudagraph_mark:
+                                torch.compiler.cudagraph_mark_step_begin()
+                            sampled_tensordict = sampled_tensordict.to(self.device)
+                            loss_td = self._update_fn(sampled_tensordict)
                         
                         losses[j] = loss_td.select("loss_actor", "loss_qvalue", "loss_alpha")
+                        del loss_td
 
                         if prb:
                             self.replay_buffer.update_priority(sampled_tensordict)
+
+            # Sync collector policy after gradient updates so next collect uses fresh weights.
+            self.collector.update_policy_weights_()
 
             # --- LOGGING ---
             self._log_and_eval(tensordict, losses if 'losses' in locals() else None, eval_iter, frames_per_batch, pbar)
@@ -194,18 +196,16 @@ class SAC:
 
     def _log_and_eval(self, tensordict, losses, eval_iter, frames_per_batch, pbar):
         """Gestisce logging e rollouts di valutazione."""
-        episode_end = (
-            tensordict["next", "done"]
-            if tensordict["next", "done"].any()
-            else tensordict["next", "truncated"]
-        )
+        episode_end = tensordict["next", "done"] | tensordict["next", "truncated"]
         episode_rewards = tensordict["next", "episode_reward"][episode_end]
 
+        breakpoint()
         metrics_to_log = {}
-        if len(episode_rewards) > 0:
+        if episode_rewards.numel() > 0:
             episode_length = tensordict["next", "step_count"][episode_end]
-            metrics_to_log["rollout/reward"] = episode_rewards
-            metrics_to_log["rollout/episode_length"] = episode_length.sum() / len(episode_length)
+            metrics_to_log["rollout/reward"] = episode_rewards.mean().item()
+            metrics_to_log["rollout/episode_length"] = episode_length.float().mean().item()
+            metrics_to_log["rollout/episodes_in_batch"] = int(episode_end.sum().item())
         
         if self.num_timesteps >= self.cfg.collector.init_random_frames and losses is not None:
             mean_losses = losses.mean()
@@ -287,9 +287,9 @@ class SAC:
     def _make_optimizers(self):
         """Inizializza gli ottimizzatori per i vari componenti."""
         from torchrl.objectives import group_optimizers
-        opt_actor = optim.Adam(self.model[0].parameters(), lr=self.cfg.optim.lr)
-        opt_critic = optim.Adam(self.model[1].parameters(), lr=self.cfg.optim.lr)
-        opt_alpha = optim.Adam([self.loss_module.log_alpha], lr=3.0e-4)
+        opt_actor = optim.Adam(self.model[0].parameters(), lr=self.cfg.optim.lr, capturable=True)
+        opt_critic = optim.Adam(self.model[1].parameters(), lr=self.cfg.optim.lr, capturable=True)
+        opt_alpha = optim.Adam([self.loss_module.log_alpha], lr=3.0e-4, capturable=True)
         return group_optimizers(opt_actor, opt_critic, opt_alpha)
 
     def _make_collector(self):
@@ -305,7 +305,7 @@ class SAC:
 
     def _make_replay_buffer(self):
         """Configura il buffer di memoria."""
-        storage = LazyTensorStorage(max_size=self.cfg.replay_buffer.size, device='cpu') # da provare su cuda
+        storage = LazyTensorStorage(max_size=self.cfg.replay_buffer.size, device=self.cfg.replay_buffer.device) # da provare su cuda
         return TensorDictReplayBuffer(storage=storage, batch_size=self.cfg.optim.batch_size)
 
     def _log_metrics(self, logger, metrics, step):
@@ -320,7 +320,7 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
     """Make SAC agent."""
     # Define Actor Network
     action_spec = train_env.action_spec_unbatched.to(device)
-    if backbone_actor == None:
+    if backbone_actor is None:
         actor_net = MLP(
             num_cells=cfg.network.hidden_sizes,
             out_features=2 * action_spec.shape[-1],
@@ -365,7 +365,7 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
     )
 
     # Define Critic Network
-    if backbone_critic == None:
+    if backbone_critic is None:
         qvalue_net = MLP(
             num_cells=cfg.network.hidden_sizes,
             out_features=1,
@@ -394,6 +394,7 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
         td = td.to(device)
         for net in model:
             net(td)
+
     return model, model[0]
 
 

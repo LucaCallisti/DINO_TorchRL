@@ -1,18 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import CLIPModel, CLIPProcessor
-import numpy as np
 import torch
-from gymnasium import spaces
-from torchvision.transforms import v2
 import torch.nn.functional as F
 from torchrl.envs.transforms import Transform
 from pathlib import Path
 
 from torchrl.envs.transforms import Transform
 from tensordict import TensorDictBase
-import numpy as np
 from torchrl.data.tensor_specs import UnboundedContinuous
 class ExtractorTransform(Transform):
     def __init__(self, device, extractor, dummy_obs_shape = (1, 4, 3, 224, 224), in_keys=None, out_keys=None):
@@ -45,12 +40,10 @@ class ExtractorTransform(Transform):
         return tensordict_reset
 
     def _process(self, obs):
-        obs_device = obs.device
         with torch.no_grad():
-            if next(self.extractor.parameters()).device != obs_device:
-                self.extractor.to(obs_device)
-            embeddings = self.extractor(obs)
-        return embeddings.to(obs_device)
+            obs_gpu = obs.to(self.extractor.device)
+            embeddings = self.extractor(obs_gpu)
+        return embeddings
 
     def transform_observation_spec(self, observation_spec):
         old_spec = observation_spec[self.out_keys[0]]
@@ -178,7 +171,6 @@ class CNN_backbone(nn.Module):
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from tensordict import TensorDict
 
 class Model(nn.Module):
     def __init__(self, n_frame: int, device: torch.device,
@@ -193,9 +185,6 @@ class Model(nn.Module):
             self.backbone = Attention_Pooling(embed_dim, num_heads=4)
         elif self.output_DINO == 'CNN':
             self.backbone = CNN_backbone(embed_dim, n_frame)
-            dummy_input = torch.zeros(1, n_frame, 14*14, embed_dim)
-            output = self.backbone(dummy_input)
-            input_dim = output.shape[-1]
         elif self.output_DINO == 'cls':
             self.backbone = nn.Identity()
         

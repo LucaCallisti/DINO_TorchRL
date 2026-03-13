@@ -1,30 +1,14 @@
-import functools
-from torchrl.envs import ParallelEnv, TransformedEnv, EnvCreator
-from torchrl.record import VideoRecorder
 import hydra
-from omegaconf import DictConfig
 # Importa qui anche la tua classe SAC e le utility
-from torchrl.envs.libs.gym import GymEnv
-from torchrl.modules import MLP, ProbabilisticActor, ValueOperator
-import torch.nn as nn
-from tensordict.nn import TensorDictModule, InteractionType
-from tensordict.nn.distributions import NormalParamExtractor
-from torchrl.modules.distributions import TanhNormal
-from torchrl.envs.utils import ExplorationType, set_exploration_type
-import torch
-from torchrl.envs.transforms import Compose, InitTracker, StepCounter, DoubleToFloat, RewardSum
 
 from Algorithm.SAC import SAC, make_sac_agent
 from Algorithm.utils import make_environment
 
-from torchrl.envs.transforms import FrameSkipTransform, CatFrames, ToTensorImage, Resize, UnsqueezeTransform
+from torchrl.envs.transforms import FrameSkipTransform, CatFrames, Resize, UnsqueezeTransform
 from torchrl.record import PixelRenderTransform
 from Model.extractor import ExtractorTransform, DinoExtractor, Model
 import copy
 
-from torchrl.envs.transforms import Transform
-from tensordict import TensorDictBase
-import numpy as np
 from Algorithm.wrappers import ToCHWTransform, ObservationSliceTransform
 
 

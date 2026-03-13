@@ -1,5 +1,4 @@
 # callbacks.py
-import warnings
 
 class BaseCallback:
     """

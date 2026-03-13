@@ -1,0 +1,114 @@
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_base.py:1045: DeprecationWarning: SyncDataCollector has been deprecated and will be removed in v0.13. Please use Collector instead.
+  warnings.warn(
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/envs/batched_envs.py:2538: UserWarning: Sending a seeded ParallelEnv to another device requires re-seeding it. Re-seeding envs to [42, 1445067485, 3334094167, 3585780589, 2792652595, 3481998204, 395747745, 79072177].
+  warn(
+/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py:103: UserWarning: CudaGraphModule is experimental and may lead to silently wrong results. Use with caution.
+  warnings.warn(
+2026-03-13 09:47:36,390 [tensordict][INFO] Setting up CudaGraphModule with stream <torch.cuda.Stream device=cuda:0 cuda_stream=0x563873f18220> on device None.
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/nn/cudagraphs.py:212: UserWarning: Tensordict is registered in PyTree. This is incompatible with CudaGraphModule. Removing TDs from PyTree. To silence this warning, call tensordict.nn.functional_modules._exclude_td_from_pytree().set() or set the environment variable `EXCLUDE_TD_FROM_PYTREE=1`. This operation is irreversible.
+  warnings.warn(
+  0%|                                                               | 1000/1000000 [00:13<3:52:21, 71.66it/s]Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 70, in <module>
+    main()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 67, in main
+    trainer.learn()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 164, in learn
+    self.replay_buffer.extend(flat_tensordict)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 87, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 1635, in extend
+    index = super()._extend(tensordicts)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 895, in _extend
+    index = self._writer.extend(data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/writers.py", line 358, in extend
+    self._storage.set(index, data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/pyvers/implement_for.py", line 69, in __call__
+    return self._fn(*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1045, in set
+    self._init(data[0])
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1409, in _init
+    return self._init_standard(data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1453, in _init_standard
+    out: TensorDictBase = torch.empty_like(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 698, in __torch_function__
+    return TD_HANDLED_FUNCTIONS[func](*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 368, in _empty_like
+    td_clone = td._fast_apply(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 10286, in _fast_apply
+    result = func(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 1499, in _apply_nest
+    item_trsf = fn(item, *_others)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 366, in empty_like
+    return torch.empty_like(x, device=device, dtype=dtype, *args, **kwargs)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1121.52 GiB. GPU 0 has a total capacity of 44.52 GiB of which 39.14 GiB is free. Including non-PyTorch memory, this process has 5.37 GiB memory in use. Of the allocated memory 4.75 GiB is allocated by PyTorch, and 114.42 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 70, in <module>
+    main()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 67, in main
+    trainer.learn()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 164, in learn
+    self.replay_buffer.extend(flat_tensordict)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 87, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 1635, in extend
+    index = super()._extend(tensordicts)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 895, in _extend
+    index = self._writer.extend(data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/writers.py", line 358, in extend
+    self._storage.set(index, data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/pyvers/implement_for.py", line 69, in __call__
+    return self._fn(*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1045, in set
+    self._init(data[0])
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1409, in _init
+    return self._init_standard(data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1453, in _init_standard
+    out: TensorDictBase = torch.empty_like(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 698, in __torch_function__
+    return TD_HANDLED_FUNCTIONS[func](*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 368, in _empty_like
+    td_clone = td._fast_apply(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 10286, in _fast_apply
+    result = func(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 1499, in _apply_nest
+    item_trsf = fn(item, *_others)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 366, in empty_like
+    return torch.empty_like(x, device=device, dtype=dtype, *args, **kwargs)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1121.52 GiB. GPU 0 has a total capacity of 44.52 GiB of which 39.14 GiB is free. Including non-PyTorch memory, this process has 5.37 GiB memory in use. Of the allocated memory 4.75 GiB is allocated by PyTorch, and 114.42 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

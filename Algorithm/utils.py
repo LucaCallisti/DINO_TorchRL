@@ -7,8 +7,6 @@ from torchrl.envs import (
     GymEnv, TransformedEnv, Compose, ParallelEnv, EnvCreator,
     InitTracker, StepCounter, DoubleToFloat, RewardSum, GymWrapper
 )
-from torchrl.record import VideoRecorder
-from torchrl.record import PixelRenderTransform
 
 # from torchrl.envs.utils import  # set_gym_backend
 
