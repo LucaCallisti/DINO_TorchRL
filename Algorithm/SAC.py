@@ -21,9 +21,17 @@ from torchrl.data import (
     TensorDictPrioritizedReplayBuffer,
     TensorDictReplayBuffer,
 )
+import torch.nn as nn
+from torchrl.modules.distributions import TanhNormal
+from tensordict.nn.distributions import NormalParamExtractor
+from tensordict.nn import InteractionType, TensorDictModule
+
+
+
 
 from Algorithm.callbacks import BaseCallback, CallbackList
 from torchrl.record import VideoRecorder
+from torchrl.modules import MLP, ProbabilisticActor, ValueOperator
 
 torch.set_float32_matmul_precision("high")
 
@@ -33,8 +41,8 @@ class SAC:
         self.device = device
         
         # Setup Seed
-        torch.manual_seed(cfg.seed)
-        np.random.seed(cfg.seed)
+        torch.manual_seed(cfg.optim.seed)
+        np.random.seed(cfg.optim.seed)
 
         # Setup Logger
         self.exp_name = generate_exp_name("SAC", cfg.logger.exp_name)
@@ -46,6 +54,7 @@ class SAC:
                 experiment_name=self.exp_name,
                 wandb_kwargs={
                     "mode": cfg.logger.mode,
+                    "entity": cfg.logger.entity,
                     "config": dict(cfg),
                     "project": cfg.logger.project_name,
                     "group": cfg.logger.group_name,
@@ -74,7 +83,7 @@ class SAC:
     def _build_update_fn(self):
         """Costruisce e avvolge (compile/cudagraph) la funzione di update per efficienza."""
         def update(sampled_tensordict):
-            sampled_tensordict = sampled_tensordict.clone()
+            sampled_tensordict = sampled_tensordict.clone().to(self.device)
             loss_td = self.loss_module(sampled_tensordict)
             actor_loss = loss_td["loss_actor"]
             q_loss = loss_td["loss_qvalue"]
@@ -291,11 +300,12 @@ class SAC:
             frames_per_batch=self.cfg.collector.frames_per_batch,
             total_frames=self.cfg.collector.total_frames,
             device=self.device
+            # device='cpu'
         )
 
     def _make_replay_buffer(self):
         """Configura il buffer di memoria."""
-        storage = LazyTensorStorage(max_size=self.cfg.replay_buffer.size, device=self.device)
+        storage = LazyTensorStorage(max_size=self.cfg.replay_buffer.size, device='cpu') # da provare su cuda
         return TensorDictReplayBuffer(storage=storage, batch_size=self.cfg.optim.batch_size)
 
     def _log_metrics(self, logger, metrics, step):
@@ -309,8 +319,6 @@ class SAC:
 def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, device = 'cpu'):
     """Make SAC agent."""
     # Define Actor Network
-    in_keys = ["observation"]
-
     action_spec = train_env.action_spec_unbatched.to(device)
     if backbone_actor == None:
         actor_net = MLP(
@@ -326,7 +334,7 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
             activation_class=get_activation(cfg),
             device=device,
         )
-        actor_net = nn.Sequential(backbone_actor.copy(), actor_head)
+        actor_net = MultiInputSequential(backbone_actor.to(device), actor_head)
 
     dist_class = TanhNormal
     dist_kwargs = {
@@ -339,16 +347,12 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
         scale_mapping=f"biased_softplus_{cfg.network.default_policy_scale}",
         scale_lb=cfg.network.scale_lb,
     ).to(device)
-    actor_net = nn.Sequential(actor_net, actor_extractor)
+    actor_net = MultiInputSequential(actor_net, actor_extractor)
 
-    in_keys_actor = in_keys
     actor_module = TensorDictModule(
         actor_net,
-        in_keys=in_keys_actor,
-        out_keys=[
-            "loc",
-            "scale",
-        ],
+        in_keys=["observation", "pixels"],
+        out_keys=["loc", "scale"]
     )
     actor = ProbabilisticActor(
         spec=action_spec,
@@ -375,10 +379,10 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
             activation_class=get_activation(cfg),
             device=device,
         )
-        qvalue_net = nn.Sequential(backbone_critic.copy(), qvalue_net_head)
+        qvalue_net = MultiInputSequential(backbone_critic.to(device), qvalue_net_head)
 
     qvalue = ValueOperator(
-        in_keys=["action"] + in_keys,
+        in_keys=["observation", "pixels", "action"],
         module=qvalue_net,
     )
 
@@ -391,3 +395,26 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
         for net in model:
             net(td)
     return model, model[0]
+
+
+def get_activation(cfg):
+    if cfg.network.activation == "relu":
+        return nn.ReLU
+    elif cfg.network.activation == "tanh":
+        return nn.Tanh
+    elif cfg.network.activation == "leaky_relu":
+        return nn.LeakyReLU
+    else:
+        raise NotImplementedError
+
+
+class MultiInputSequential(nn.Module):
+    def __init__(self, *modules):
+        super().__init__()
+        self.modules_list = nn.ModuleList(modules)
+
+    def forward(self, *inputs):
+        x = self.modules_list[0](*inputs)
+        for module in self.modules_list[1:]:
+            x = module(x)
+        return x

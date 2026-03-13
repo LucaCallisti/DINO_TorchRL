@@ -32,11 +32,11 @@ class ExtractorTransform(Transform):
             dummy_output = self.extractor(dummy_obs)
             self.embedding_shape = dummy_output.shape[1:]
     
-    def _step(self, tensordict: TensorDictBase) -> TensorDictBase:
-        pixels = tensordict.get(("next", self.in_keys[0]))
+    def _step(self, tensordict_in: TensorDictBase, tensordict_out: TensorDictBase = None) -> TensorDictBase:
+        pixels = tensordict_out.get(self.in_keys[0])
         normalized_pixels = self._process(pixels)
-        tensordict.set(("next", self.out_keys[0]), normalized_pixels)
-        return tensordict
+        tensordict_out.set(self.out_keys[0], normalized_pixels)
+        return tensordict_out
 
     def _reset(self, tensordict: TensorDictBase, tensordict_reset: TensorDictBase) -> TensorDictBase:
         pixels = tensordict_reset.get(self.in_keys[0])
@@ -49,12 +49,6 @@ class ExtractorTransform(Transform):
         with torch.no_grad():
             if next(self.extractor.parameters()).device != obs_device:
                 self.extractor.to(obs_device)
-                print('spostamento modello gpu')
-            for name, param in self.extractor.named_parameters():
-                print(name, param.device)
-            for name, buffer in self.extractor.named_buffers():
-                print(name, buffer.device)
-            print("obs.device:", obs.device)
             embeddings = self.extractor(obs)
         return embeddings.to(obs_device)
 
@@ -63,14 +57,12 @@ class ExtractorTransform(Transform):
         batch_shape = observation_spec.shape
 
         new_shape = batch_shape + self.embedding_shape
-        
         new_spec = UnboundedContinuous(
             shape=new_shape,
             dtype=torch.float32,
             device=old_spec.device
         )
-        
-        observation_spec.set(self.out_keys[0], new_spec)
+        observation_spec.set(self.out_keys[0], new_spec)        
         return observation_spec
 
     def to(self, device):
@@ -186,10 +178,11 @@ class CNN_backbone(nn.Module):
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from tensordict import TensorDict
 
 class Model(nn.Module):
-    def __init__(self, input_dim: int, n_frame: int, device: torch.device,
-                 output_DINO: str = 'cls', model_input: str = 'State-Image'):
+    def __init__(self, n_frame: int, device: torch.device,
+                 output_DINO: str = 'Attention_Pooling', model_input: str = 'State-Image'):
         super().__init__()
 
         self.n_frame = n_frame
@@ -231,17 +224,19 @@ class Model(nn.Module):
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0.0)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        state = x['state']  # B, N_frame, s
-        state = state.reshape((state.shape[0], -1))  # B, N_frame*s
+    def forward(self, *inputs: torch.Tensor) -> torch.Tensor:
+        if len(inputs) == 2:
+            obs, pixels = inputs
+        elif len(inputs) == 3:
+            obs, pixels, actions = inputs
+            obs = torch.cat([obs, actions], dim = 1)
 
-        image = x['pixels'] 
-        x_image = self.backbone(image)
+        x_image = self.backbone(pixels)
         x_image = self.fc1_pixels(x_image)
         x_image = F.relu(x_image, inplace=True)
 
         if self.model_input == 'State-Image':
-            x_state = self.fc1_state(state)
+            x_state = self.fc1_state(obs)
             x_state = F.relu(x_state, inplace=True)
             x = torch.cat([x_state, x_image], dim=1)
         else:

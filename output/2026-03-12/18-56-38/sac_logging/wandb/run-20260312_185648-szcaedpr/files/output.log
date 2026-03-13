@@ -1,0 +1,38 @@
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_base.py:1045: DeprecationWarning: SyncDataCollector has been deprecated and will be removed in v0.13. Please use Collector instead.
+  warnings.warn(
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/envs/batched_envs.py:2538: UserWarning: Sending a seeded ParallelEnv to another device requires re-seeding it. Re-seeding envs to [42, 1445067485].
+  warn(
+  0%|                                                                                         | 1000/1000000 [00:52<14:29:05, 19.16it/s]Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 68, in main
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 163, in learn
+    self.replay_buffer.extend(flat_tensordict)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 87, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 1635, in extend
+    index = super()._extend(tensordicts)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/replay_buffers.py", line 895, in _extend
+    index = self._writer.extend(data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/writers.py", line 358, in extend
+    self._storage.set(index, data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/pyvers/implement_for.py", line 69, in __call__
+    return self._fn(*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1045, in set
+    self._init(data[0])
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1409, in _init
+    return self._init_standard(data)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/replay_buffers/storages.py", line 1453, in _init_standard
+    out: TensorDictBase = torch.empty_like(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 698, in __torch_function__
+    return TD_HANDLED_FUNCTIONS[func](*args, **kwargs)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 368, in _empty_like
+    td_clone = td._fast_apply(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/base.py", line 10286, in _fast_apply
+    result = func(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 1499, in _apply_nest
+    item_trsf = fn(item, *_others)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_torch_func.py", line 366, in empty_like
+    return torch.empty_like(x, device=device, dtype=dtype, *args, **kwargs)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1121.52 GiB. GPU 0 has a total capacity of 44.52 GiB of which 39.21 GiB is free. Including non-PyTorch memory, this process has 5.31 GiB memory in use. Of the allocated memory 4.71 GiB is allocated by PyTorch, and 82.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

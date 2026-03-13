@@ -1,0 +1,11 @@
+{"time":"2026-03-12T18:56:49.093672539+01:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-03-12T18:56:49.421524468+01:00","level":"INFO","msg":"stream: created new stream","id":"szcaedpr"}
+{"time":"2026-03-12T18:56:49.42165498+01:00","level":"INFO","msg":"handler: started","stream_id":"szcaedpr"}
+{"time":"2026-03-12T18:56:49.421809052+01:00","level":"INFO","msg":"stream: started","id":"szcaedpr"}
+{"time":"2026-03-12T18:56:49.421842522+01:00","level":"INFO","msg":"sender: started","stream_id":"szcaedpr"}
+{"time":"2026-03-12T18:56:49.421845712+01:00","level":"INFO","msg":"writer: started","stream_id":"szcaedpr"}
+{"time":"2026-03-12T18:57:43.225507706+01:00","level":"INFO","msg":"stream: closing","id":"szcaedpr"}
+{"time":"2026-03-12T18:57:43.673823368+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-03-12T18:57:44.077753693+01:00","level":"INFO","msg":"handler: closed","stream_id":"szcaedpr"}
+{"time":"2026-03-12T18:57:44.077933915+01:00","level":"INFO","msg":"sender: closed","stream_id":"szcaedpr"}
+{"time":"2026-03-12T18:57:44.077947256+01:00","level":"INFO","msg":"stream: closed","id":"szcaedpr"}
