@@ -87,3 +87,72 @@ class CallbackList(BaseCallback):
     def _on_training_end(self) -> None:
         for callback in self.callbacks:
             callback.on_training_end()
+
+
+class EmbeddingDiversityCallback(BaseCallback):
+    """
+    Logs DINO embedding diversity metrics to detect feature collapse.
+
+    Samples a mini-batch from the replay buffer every `log_every` steps and computes:
+    - embed/mean_cos_sim  : mean pairwise cosine similarity.
+                            Close to 1.0 → all states look the same (collapse).
+                            Ideally < 0.5 for a diverse feature space.
+    - embed/mean_feat_std : mean per-dimension std across the batch.
+                            Low → embeddings are clustered in a small region.
+    - embed/mean_norm     : mean L2 norm — sanity-check for embedding scale.
+
+    Args:
+        log_every: how many training steps between each logging call (default 1000).
+        key:       tensordict key holding the embeddings (default "pixels_embeddings").
+    """
+    def __init__(self, log_every: int = 1_000, key: str = "pixels_embeddings", verbose: int = 0):
+        super().__init__(verbose=verbose)
+        self.log_every = log_every
+        self.key = key
+        self._last_log_step = -log_every  # Force log on first call
+
+    def _on_step(self, tensordict) -> bool:
+        if self.num_timesteps - self._last_log_step < self.log_every:
+            return True  # not yet time to log
+        
+        self._last_log_step = self.num_timesteps
+
+        # Replay buffer must have data
+        rb = self.model.replay_buffer
+        if len(rb) == 0:
+            return True
+
+        import torch
+        import torch.nn.functional as F
+
+        with torch.no_grad():
+            batch = rb.sample()
+            feats = batch.get(self.key, None)
+            if feats is None and isinstance(self.key, str):
+                feats = batch.get(("next", self.key), None)
+
+        if feats is None:
+            return True
+
+        feats = feats.float()
+        if feats.dim() == 1:
+            feats = feats.unsqueeze(0)
+        elif feats.dim() > 2:
+            feats = feats.flatten(start_dim=1)
+
+        B = feats.shape[0]
+
+        fn = F.normalize(feats, dim=-1)            # (B, D)
+        cos_sim = fn @ fn.T                         # (B, B)
+        off_diag_mean = (cos_sim.sum() - cos_sim.trace()) / max(B * (B - 1), 1)
+
+        metrics = {
+            "embed/mean_cos_sim":  off_diag_mean.item(),
+            "embed/mean_feat_std": feats.std(dim=0).mean().item(),
+            "embed/mean_norm":     feats.norm(dim=-1).mean().item(),
+        }
+
+        if self.model.logger is not None:
+            self.model._log_metrics(self.model.logger, metrics, self.num_timesteps)
+
+        return True

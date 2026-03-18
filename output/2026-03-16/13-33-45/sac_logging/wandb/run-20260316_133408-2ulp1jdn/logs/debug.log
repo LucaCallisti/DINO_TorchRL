@@ -1,0 +1,287 @@
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_setup.py:_flush():81] Current SDK version is 0.25.0
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_setup.py:_flush():81] Configure stats pid to 365236
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_init.py:setup_run_log_directory():717] Logging user logs to sac_logging/wandb/run-20260316_133408-2ulp1jdn/logs/debug.log
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_init.py:setup_run_log_directory():718] Logging internal logs to sac_logging/wandb/run-20260316_133408-2ulp1jdn/logs/debug-internal.log
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_init.py:init():844] calling init triggers
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_init.py:init():849] wandb.init called with sweep_config: {}
+config: {'env': {'name': 'reach-v3', 'task': '', 'library': 'metaworld', 'max_episode_steps': 150, 'pixel_input': True, 'seed': 42}, 'collector': {'total_frames': 1000000, 'init_random_frames': 5000, 'frames_per_batch': 256, 'device': None, 'env_per_collector': 8, 'reset_at_each_iter': False}, 'replay_buffer': {'size': 200000, 'prb': 0, 'scratch_dir': None, 'device': 'cpu'}, 'optim': {'utd_ratio': 1.0, 'gamma': 0.99, 'loss_function': 'l2', 'lr': 0.0001, 'alpha_lr': 0.0001, 'alpha_init': 1.5, 'alpha_target': 0.25, 'weight_decay': 0.0, 'batch_size': 256, 'target_update_polyak': 0.995, 'adam_eps': 1e-08, 'seed': 100}, 'logger': {'backend': 'wandb', 'entity': 'CLIP_RL', 'project_name': 'torchrl_example_sac', 'group_name': None, 'exp_name': '${env.name}_SAC', 'mode': 'online', 'num_eval_episodes': 5, 'eval_iter': 50000, 'video': False}, 'compile': {'compile': False, 'compile_mode': 'reduce-overhead', 'cudagraphs': False}, 'network': {'hidden_sizes': [256, 256], 'activation': 'relu', 'default_policy_scale': 1.0, 'scale_lb': 0.0001, 'device': 'cuda:0'}, '_wandb': {}}
+2026-03-16 13:34:08,225 INFO    MainThread:365236 [wandb_init.py:init():892] starting backend
+2026-03-16 13:34:08,439 INFO    MainThread:365236 [wandb_init.py:init():895] sending inform_init request
+2026-03-16 13:34:08,444 INFO    MainThread:365236 [wandb_init.py:init():903] backend started and connected
+2026-03-16 13:34:08,446 INFO    MainThread:365236 [wandb_init.py:init():973] updated telemetry
+2026-03-16 13:34:08,453 INFO    MainThread:365236 [wandb_init.py:init():997] communicating run to backend with 90.0 second timeout
+2026-03-16 13:34:09,459 INFO    MainThread:365236 [wandb_init.py:init():1042] starting run threads in backend
+2026-03-16 13:34:09,576 INFO    MainThread:365236 [wandb_run.py:_console_start():2524] atexit reg
+2026-03-16 13:34:09,576 INFO    MainThread:365236 [wandb_run.py:_redirect():2373] redirect: wrap_raw
+2026-03-16 13:34:09,576 INFO    MainThread:365236 [wandb_run.py:_redirect():2442] Wrapping output streams.
+2026-03-16 13:34:09,576 INFO    MainThread:365236 [wandb_run.py:_redirect():2465] Redirects installed.
+2026-03-16 13:34:09,580 INFO    MainThread:365236 [wandb_init.py:init():1082] run started, returning control to user process
+2026-03-16 13:35:20,510 INFO    wandb-AsyncioManager-main:365236 [service_client.py:_forward_responses():134] Reached EOF.
+2026-03-16 13:35:20,511 INFO    wandb-AsyncioManager-main:365236 [mailbox.py:close():155] Closing mailbox, abandoning 1 handles.
+2026-03-16 13:35:33,313 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,315 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,315 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,315 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,315 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,315 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,316 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,316 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,317 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,317 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,317 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,317 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,317 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,318 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,318 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost
+2026-03-16 13:35:33,318 ERROR   wandb-AsyncioManager-main:365236 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 78, in _send_server_request
+    raise self._broken_exc.with_traceback(self._broken_tb)
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 371, in drain
+    await self._protocol._drain_helper()
+  File "/usr/lib/python3.10/asyncio/streams.py", line 167, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost

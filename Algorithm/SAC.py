@@ -10,6 +10,7 @@ from tensordict.nn import CudaGraphModule
 from torchrl._utils import compile_with_warmup, timeit
 from torchrl.envs.utils import ExplorationType, set_exploration_type
 from torchrl.record.loggers import generate_exp_name, get_logger
+from torchrl.record import VideoRecorder
 from torchrl.objectives.sac import SACLoss
 from torchrl.objectives import SoftUpdate
 import torch.optim as optim
@@ -27,7 +28,7 @@ from tensordict.nn import InteractionType, TensorDictModule
 
 
 from Algorithm.callbacks import BaseCallback, CallbackList
-from torchrl.record import VideoRecorder
+from Algorithm.wrappers import VideoPixelsTransform
 from torchrl.modules import MLP, ProbabilisticActor, ValueOperator
 
 torch.set_float32_matmul_precision("high")
@@ -70,6 +71,8 @@ class SAC:
             if self.compile_mode in ("", None):
                 self.compile_mode = "default" if cfg.compile.cudagraphs else "reduce-overhead"
 
+        self._setup_video_recording()
+
         self.collector = self._make_collector()
         self.replay_buffer = self._make_replay_buffer()
 
@@ -77,32 +80,87 @@ class SAC:
 
         self.num_timesteps = 0
 
-    def _build_update_fn(self):
-        """Costruisce e avvolge (compile/cudagraph) la funzione di update per efficienza."""
-        def update(sampled_tensordict):
-            loss_td = self.loss_module(sampled_tensordict)
-            actor_loss = loss_td["loss_actor"]
-            q_loss = loss_td["loss_qvalue"]
-            alpha_loss = loss_td["loss_alpha"]
+    def _setup_video_recording(self):
+        """Attach a dedicated video key + VideoRecorder to eval_env."""
+        if not self.cfg.logger.video or self.logger is None:
+            return
 
+        compose = self.eval_env.transform
+
+        # Insert right after PixelRenderTransform so we preserve raw visual timing.
+        insert_pos = None
+        for i, t in enumerate(compose):
+            if type(t).__name__ == "PixelRenderTransform":
+                insert_pos = i + 1
+                break
+            if type(t).__name__ == "ToCHWTransform" and insert_pos is None:
+                # Fallback if PixelRenderTransform isn't visible in the chain.
+                insert_pos = i
+
+        if insert_pos is None:
+            warnings.warn(
+                "VideoRecorder: could not find PixelRenderTransform/ToCHWTransform "
+                "in eval_env. Video recording disabled.",
+                category=UserWarning,
+            )
+            return
+
+        self._video_pixels_transform = VideoPixelsTransform(
+            in_keys=["pixels"],
+            out_keys=["video_pixels"],
+        )
+        compose.insert(insert_pos, self._video_pixels_transform)
+
+        self._video_recorder = VideoRecorder(
+            logger=self.logger,
+            tag="eval/video",
+            in_keys=["video_pixels"],
+        )
+        compose.insert(insert_pos + 1, self._video_recorder)
+
+    def _build_update_fn(self):
+        """Builds the update function, compiling only the backward+optimizer step.
+
+        NOTE: self.loss_module (SACLoss) is intentionally kept *outside*
+        torch.compile because its forward pass uses tensordict.to_module()
+        which constructs deeply-nested TensorDict objects that cause
+        torch._dynamo to recurse infinitely during tracing.
+        """
+        def _compiled_backward_and_step(actor_loss, q_loss, alpha_loss):
+            """Only this part is compiled — pure tensor ops with no TensorDict nesting.
+            zero_grad is called at the START so that gradients from the last backward
+            are still readable in _log_and_eval (for grad norm logging).
+            """
+            self.optimizer.zero_grad(set_to_none=True)   # clear grads BEFORE backward
             (actor_loss + q_loss + alpha_loss).sum().backward()
             self.optimizer.step()
-            self.optimizer.zero_grad(set_to_none=True)
-
             self.target_net_updater.step()
-            actor_loss = q_loss = alpha_loss = None
-            return loss_td.detach()
 
         if self.cfg.compile.compile:
-            update = compile_with_warmup(update, mode=self.compile_mode, warmup=1)
+            _compiled_backward_and_step = compile_with_warmup(
+                _compiled_backward_and_step, mode=self.compile_mode, warmup=1
+            )
 
         if self.cfg.compile.cudagraphs:
             warnings.warn(
                 "CudaGraphModule is experimental and may lead to silently wrong results. Use with caution.",
                 category=UserWarning,
             )
-            update = CudaGraphModule(update, in_keys=[], out_keys=[], warmup=5)
-            
+            _compiled_backward_and_step = CudaGraphModule(
+                _compiled_backward_and_step, in_keys=[], out_keys=[], warmup=5
+            )
+
+        def update(sampled_tensordict):
+            # loss_module uses tensordict.to_module() internally — must NOT be compiled
+            loss_td = self.loss_module(sampled_tensordict)
+
+            actor_loss = loss_td["loss_actor"]
+            q_loss    = loss_td["loss_qvalue"]
+            alpha_loss = loss_td["loss_alpha"]
+
+            _compiled_backward_and_step(actor_loss, q_loss, alpha_loss)
+            return loss_td.detach()
+
         return update
 
     def learn(self, total_frames: int = None, callback: BaseCallback | list | None = None):
@@ -175,7 +233,11 @@ class SAC:
                             sampled_tensordict = sampled_tensordict.to(self.device)
                             loss_td = self._update_fn(sampled_tensordict)
                         
-                        losses[j] = loss_td.select("loss_actor", "loss_qvalue", "loss_alpha")
+                        losses[j] = loss_td.select(
+                                "loss_actor", "loss_qvalue", "loss_alpha",
+                                "entropy",  # needed to decompose actor_loss = -alpha*entropy - Q
+                                strict=False,
+                            )
                         del loss_td
 
                         if prb:
@@ -195,68 +257,111 @@ class SAC:
         self._cleanup()
 
     def _log_and_eval(self, tensordict, losses, eval_iter, frames_per_batch, pbar):
-        """Gestisce logging e rollouts di valutazione."""
+        """Handles logging and evaluation rollouts."""
         episode_end = tensordict["next", "done"] | tensordict["next", "truncated"]
         episode_rewards = tensordict["next", "episode_reward"][episode_end]
+        step_rewards = tensordict["next", "reward"]
+        actions = tensordict.get("action", None)
 
-        breakpoint()
         metrics_to_log = {}
+        metrics_to_log["progress/num_timesteps"] = self.num_timesteps
+        metrics_to_log["rollout/reward_step_mean"] = step_rewards.float().mean().item()
+        metrics_to_log["rollout/reward_step_std"] = step_rewards.float().std().item()
+        if actions is not None:
+            actions_float = actions.float()
+            action_std = actions_float.std()
+            action_mean_abs = actions_float.abs().mean()
+            if torch.isfinite(action_std):
+                metrics_to_log["rollout/action_std"] = action_std.item()
+            if torch.isfinite(action_mean_abs):
+                metrics_to_log["rollout/action_mean_abs"] = action_mean_abs.item()
         if episode_rewards.numel() > 0:
             episode_length = tensordict["next", "step_count"][episode_end]
             metrics_to_log["rollout/reward"] = episode_rewards.mean().item()
+            metrics_to_log["rollout/reward_std"] = episode_rewards.float().std().item()
             metrics_to_log["rollout/episode_length"] = episode_length.float().mean().item()
             metrics_to_log["rollout/episodes_in_batch"] = int(episode_end.sum().item())
         
         if self.num_timesteps >= self.cfg.collector.init_random_frames and losses is not None:
             mean_losses = losses.mean()
-            metrics_to_log["train/q_loss"] = mean_losses.get("loss_qvalue")
-            metrics_to_log["train/actor_loss"] = mean_losses.get("loss_actor")
-            metrics_to_log["train/ent_coef_loss"] = mean_losses.get("loss_alpha")
-            metrics_to_log["train/ent_coef"] = self.loss_module.log_alpha.exp().item()
+            actor_loss = mean_losses.get("loss_actor")
+            entropy    = mean_losses.get("entropy", None)
+            alpha      = self.loss_module.log_alpha.exp().detach()
+
+            metrics_to_log["train/q_loss"]           = mean_losses.get("loss_qvalue")
+            metrics_to_log["train/actor_loss"]        = actor_loss
+            metrics_to_log["train/ent_coef_loss"]     = mean_losses.get("loss_alpha")
+            metrics_to_log["train/ent_coef"]          = alpha.item()
             metrics_to_log["train/learning_rate_actor"] = self.optimizer.param_groups[0]['lr']
-            
+
+            # Decompose actor_loss = -alpha*entropy - mean_Q  →  mean_Q = -(actor_loss + alpha*entropy)
+            # Useful to check whether Q is growing even when actor_loss appears to increase
+            if entropy is not None:
+                metrics_to_log["train/entropy"]      = entropy.item()
+                mean_q_actor = -(actor_loss + alpha * entropy)
+                metrics_to_log["train/mean_q_actor"] = mean_q_actor.item()
+
+            # Gradient norms — useful to detect vanishing/exploding gradients in backbone
+            def _grad_norm(module):
+                total = 0.0
+                for p in module.parameters():
+                    if p.grad is not None:
+                        total += p.grad.detach().norm().item() ** 2
+                return total ** 0.5
+
+            if self.cfg.logger.grad_norm:
+                actor_mod = getattr(self.loss_module, "actor_network", self.model[0])
+                critic_mod = getattr(self.loss_module, "qvalue_network", self.model[1])
+                metrics_to_log["train/grad_norm_actor"]  = _grad_norm(actor_mod)
+                metrics_to_log["train/grad_norm_critic"] = _grad_norm(critic_mod)
+
         # Evaluation
-        if abs(self.num_timesteps % eval_iter) < frames_per_batch:
-            self.evaluate(num_episodes = self.cfg.logger.num_eval_episodes)
-                
+        if self.eval_env is not None and abs(self.num_timesteps % eval_iter) < frames_per_batch:
+            eval_metrics = self.evaluate(num_episodes=self.cfg.logger.num_eval_episodes)
+            metrics_to_log.update(eval_metrics)
+
         if self.logger is not None:
             metrics_to_log.update(timeit.todict(prefix="time"))
             metrics_to_log["time/fps"] = pbar.format_dict["rate"]
             self._log_metrics(self.logger, metrics_to_log, self.num_timesteps)
 
-        
+
     def evaluate(self, num_episodes: int = 1):
         """
-        Esegue una valutazione deterministica dell'agente.
-        
-        :param num_episodes: Numero di episodi su cui calcolare la media.
-        :return: Dizionario contenente la ricompensa media e altre metriche.
+        Runs a deterministic evaluation of the agent.
+
+        :param num_episodes: Number of episodes to average over.
+        :return: Dict with eval metrics.
         """
         avg_reward = 0.0
-        # Impostiamo l'esplorazione su DETERMINISTIC per la valutazione
+        record_video = hasattr(self, "_video_recorder") and hasattr(self, "_video_pixels_transform")
+        if record_video:
+            self._video_recorder.obs = []
+            self._video_recorder.count = 0
+            self._video_recorder.skip = 1
+
         with set_exploration_type(ExplorationType.DETERMINISTIC), torch.no_grad():
-            for _ in range(num_episodes):
-                # Eseguiamo un rollout sull'ambiente di valutazione
+            for ep in range(num_episodes):
+                if record_video:
+                    # Record only first eval episode to keep videos short and consistent.
+                    if ep == 1:
+                        self._video_recorder.skip = 10**9
+                        self._video_recorder.count = 0
                 eval_rollout = self.eval_env.rollout(
                     max_steps=self.cfg.env.max_episode_steps,
                     policy=self.model[0],
                     auto_cast_to_device=True,
-                    break_when_any_done=True,
+                    break_when_any_done=False,
                 )
-                # Calcoliamo la ricompensa totale dell'episodio
-                # reward è solitamente in ("next", "reward")
                 avg_reward += eval_rollout["next", "reward"].sum(-2).mean().item()
-                
-                # Se è prevista la registrazione video, effettuiamo il dump
-                self.eval_env.apply(self.dump_video)
 
         avg_reward /= num_episodes
-        
+
+        if record_video:
+            self._video_recorder.dump(step=self.num_timesteps)
+            self._video_recorder.skip = 1
+
         return {"eval/reward": avg_reward}
-    
-    def dump_video(self, module):
-        if isinstance(module, VideoRecorder):
-            module.dump()
 
     def _cleanup(self):
         self.collector.shutdown()
@@ -274,11 +379,19 @@ class SAC:
 
     def _make_loss(self):
         """Configura il modulo della loss SAC."""
+        action_spec = self.train_env.action_spec
+        if hasattr(action_spec, "keys") and "action" in action_spec.keys():
+            action_shape = action_spec["action"].shape
+        else:
+            action_shape = action_spec.shape
+        action_dim = action_shape[-1]
+
         loss_module = SACLoss(
             actor_network=self.model[0],
             qvalue_network=self.model[1],
             num_qvalue_nets=2,
-            alpha_init=self.cfg.optim.alpha_init
+            alpha_init=self.cfg.optim.alpha_init,
+            target_entropy = -self.cfg.optim.alpha_target * action_dim
         )
         loss_module.make_value_estimator(gamma=self.cfg.optim.gamma)
         target_net_updater = SoftUpdate(loss_module, eps=self.cfg.optim.target_update_polyak)
@@ -289,7 +402,7 @@ class SAC:
         from torchrl.objectives import group_optimizers
         opt_actor = optim.Adam(self.model[0].parameters(), lr=self.cfg.optim.lr, capturable=True)
         opt_critic = optim.Adam(self.model[1].parameters(), lr=self.cfg.optim.lr, capturable=True)
-        opt_alpha = optim.Adam([self.loss_module.log_alpha], lr=3.0e-4, capturable=True)
+        opt_alpha = optim.Adam([self.loss_module.log_alpha], lr=self.cfg.optim.alpha_lr, capturable=True)
         return group_optimizers(opt_actor, opt_critic, opt_alpha)
 
     def _make_collector(self):
@@ -300,7 +413,6 @@ class SAC:
             frames_per_batch=self.cfg.collector.frames_per_batch,
             total_frames=self.cfg.collector.total_frames,
             device=self.device
-            # device='cpu'
         )
 
     def _make_replay_buffer(self):
@@ -351,7 +463,7 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
 
     actor_module = TensorDictModule(
         actor_net,
-        in_keys=["observation", "pixels"],
+        in_keys=["observation", "pixels_embeddings"],
         out_keys=["loc", "scale"]
     )
     actor = ProbabilisticActor(
@@ -382,7 +494,7 @@ def make_sac_agent(cfg, train_env, backbone_actor=None, backbone_critic=None, de
         qvalue_net = MultiInputSequential(backbone_critic.to(device), qvalue_net_head)
 
     qvalue = ValueOperator(
-        in_keys=["observation", "pixels", "action"],
+        in_keys=["observation", "pixels_embeddings", "action"],
         module=qvalue_net,
     )
 

@@ -1,0 +1,53 @@
+> /home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py(293)_make_loss()
+-> loss_module = SACLoss(
+TransformedEnv(
+    env=ParallelEnv(
+    	env=TransformedEnv(
+        env=GymWrapper(env=<SawyerReachEnvV3 instance>, batch_size=torch.Size([])),
+        transform=Compose(
+                FrameSkipTransform(keys=[]))),
+    	batch_size=torch.Size([8])),
+    transform=Compose(
+            InitTracker(keys=[]),
+            StepCounter(keys=[]),
+            DoubleToFloat(in_keys=['observation'], out_keys=['observation'], in_keys_inv=[], out_keys_inv=[]),
+            RewardSum(keys=['reward']),
+            PixelRenderTransform(keys=[]),
+            ToCHWTransform(keys=['pixels']),
+            Resize(w=224, h=224, interpolation=InterpolationMode.BILINEAR, keys=['pixels']),
+            ObservationSliceTransform(keys=['observation']),
+            UnsqueezeTransform(dim=-4, in_keys=['pixels'], out_keys=['pixels'], in_keys_inv=[], out_keys_inv=[]),
+            CatFrames(N=4, dim=-4, keys=['pixels']),
+            CatFrames(N=4, dim=-1, keys=['observation']),
+            ExtractorTransform(keys=['pixels'])))
+['T_destination', '_GYM_UNRECOGNIZED_KWARG', '__abstractmethods__', '__annotations__', '__call__', '__class__', '__del__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_abc_impl', '_action_keys_step_mdp', '_allow_done_after_reset', '_apply', '_assert_tensordict_shape', '_backward_hooks', '_backward_pre_hooks', '_batch_locked', '_batch_size', '_buffers', '_cache', '_cache_in_keys', '_call_impl', '_collector', '_compiled_call_impl', '_complete_done', '_create_done_specs', '_device', '_device', '_done_keys_step_mdp', '_filtered_reset_keys', '_forward_hooks', '_forward_hooks_always_called', '_forward_hooks_with_kwargs', '_forward_pre_hooks', '_forward_pre_hooks_with_kwargs', '_get_backward_hooks', '_get_backward_pre_hooks', '_get_in_keys_to_exclude', '_get_name', '_has_dynamic_specs', '_inplace_update', '_input_spec', '_is_full_backward_hook', '_is_spec_locked', '_last_obs', '_load_from_state_dict', '_load_state_dict_post_hooks', '_load_state_dict_pre_hooks', '_make_input_spec', '_make_output_spec', '_make_single_env_spec', '_maybe_warn_non_full_backward_hook', '_modules', '_named_members', '_non_persistent_buffers_set', '_observation_keys_step_mdp', '_output_spec', '_parameters', '_register_gym', '_register_load_state_dict_pre_hook', '_register_state_dict_hook', '_replicate_for_data_parallel', '_reset', '_reset_check_done', '_reset_proc_data', '_reward_keys_step_mdp', '_rollout_nonstop', '_rollout_stop_early', '_run_type_checks', '_save_to_state_dict', '_select_observation_keys', '_set_env', '_set_seed', '_simple_done', '_skip_tensordict', '_slow_forward', '_state_dict_hooks', '_state_dict_pre_hooks', '_state_keys_step_mdp', '_step', '_step_mdp', '_step_proc_data', '_transform', '_version', '_wrapped_call_impl', 'action_key', 'action_keys', 'action_spec', 'action_spec_unbatched', 'add_module', 'add_truncated_keys', 'all_actions', 'any_done', 'append_transform', 'apply', 'auto_specs_', 'base_env', 'batch_dims', 'batch_locked', 'batch_size', 'bfloat16', 'buffers', 'cache_specs', 'call_super_init', 'cardinality', 'check_env_specs', 'children', 'close', 'collector', 'compile', 'configure_parallel', 'cpu', 'cuda', 'device', 'done_key', 'done_keys', 'done_keys_groups', 'done_spec', 'done_spec_unbatched', 'double', 'dump_patches', 'empty_cache', 'eval', 'extra_repr', 'fake_tensordict', 'float', 'forward', 'full_action_spec', 'full_action_spec_unbatched', 'full_done_spec', 'full_done_spec_unbatched', 'full_observation_spec', 'full_observation_spec_unbatched', 'full_reward_spec', 'full_reward_spec_unbatched', 'full_state_spec', 'full_state_spec_unbatched', 'get_buffer', 'get_extra_state', 'get_parameter', 'get_submodule', 'half', 'input_spec', 'input_spec_unbatched', 'insert_transform', 'ipu', 'is_closed', 'is_spec_locked', 'load_state_dict', 'make_parallel', 'maybe_reset', 'modules', 'mtia', 'named_buffers', 'named_children', 'named_modules', 'named_parameters', 'ndim', 'ndimension', 'numel', 'observation_keys', 'observation_spec', 'observation_spec_unbatched', 'output_spec', 'output_spec_unbatched', 'parameters', 'rand_action', 'rand_step', 'register_backward_hook', 'register_buffer', 'register_collector', 'register_forward_hook', 'register_forward_pre_hook', 'register_full_backward_hook', 'register_full_backward_pre_hook', 'register_gym', 'register_load_state_dict_post_hook', 'register_load_state_dict_pre_hook', 'register_module', 'register_parameter', 'register_state_dict_post_hook', 'register_state_dict_pre_hook', 'requires_grad_', 'reset', 'reset_keys', 'reward_key', 'reward_keys', 'reward_spec', 'reward_spec_unbatched', 'rollout', 'run_type_checks', 'set_extra_state', 'set_missing_tolerance', 'set_seed', 'set_spec_lock_', 'set_state', 'set_submodule', 'shape', 'share_memory', 'specs', 'state_dict',
+<torchrl.envs.batched_envs._dispatch_caller_parallel object at 0x7f633b517d60>
+<torchrl.envs.batched_envs._dispatch_caller_parallel object at 0x7f633b517b20>
+*** EOFError
+<torchrl.envs.batched_envs._dispatch_caller_parallel object at 0x7f633b517d60>
+*** TypeError: '_dispatch_caller_parallel' object is not subscriptable
+*** NameError: name 'single_env' is not defined
+*** BrokenPipeError: [Errno 32] Broken pipe
+4
+*** SyntaxError: invalid syntax
+*** NameError: name 'CompositeSpec' is not defined
+*** ImportError: cannot import name 'CompositeSpec' from 'torchrl.data' (/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/data/__init__.py)
+False
+torch.Size([8, 4])
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 41, in main
+    trainer = SAC(
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 63, in __init__
+    self.loss_module, self.target_net_updater = self._make_loss()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 293, in _make_loss
+    if hasattr(action_spec, "keys") and "action" in action_spec.keys():
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 293, in _make_loss
+    if hasattr(action_spec, "keys") and "action" in action_spec.keys():
+  File "/usr/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/usr/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

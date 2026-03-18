@@ -1,0 +1,11 @@
+[2026-03-16 13:33:46,664][dinov3][INFO] - using base=100 for rope new
+[2026-03-16 13:33:46,664][dinov3][INFO] - using min_period=None for rope new
+[2026-03-16 13:33:46,664][dinov3][INFO] - using max_period=None for rope new
+[2026-03-16 13:33:46,664][dinov3][INFO] - using normalize_coords=separate for rope new
+[2026-03-16 13:33:46,664][dinov3][INFO] - using shift_coords=None for rope new
+[2026-03-16 13:33:46,664][dinov3][INFO] - using rescale_coords=2 for rope new
+[2026-03-16 13:33:46,664][dinov3][INFO] - using jitter_coords=None for rope new
+[2026-03-16 13:33:46,664][dinov3][INFO] - using dtype=fp32 for rope new
+[2026-03-16 13:33:46,665][dinov3][INFO] - using mlp layer as FFN
+[2026-03-16 13:35:33,313][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 13:35:33,313][asyncio][WARNING] - socket.send() raised exception.

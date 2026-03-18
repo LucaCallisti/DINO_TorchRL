@@ -1,6 +1,6 @@
 import os
 os.environ['MUJOCO_GL']="egl"
-os.environ['PYOOPENGL_PLATFORM']="egl"
+os.environ['PYOPENGL_PLATFORM']="egl"
 
 import functools
 from torchrl.envs import (
@@ -20,12 +20,13 @@ def env_maker(cfg, device="cpu", from_pixels=False, pre_transforms=None):
 
         ml1 = metaworld.ML1(cfg.env.name)
         if from_pixels:
-            env = ml1.train_classes[cfg.env.name](render_mode="rgb_array")
+            env = ml1.train_classes[cfg.env.name](render_mode="rgb_array", camera_name='corner2')
+            # env = ForceCameraWrapper(env)
         else:
             env = ml1.train_classes[cfg.env.name]()
         task = ml1.train_tasks[0]
         
-        env.set_task(task)
+        env.unwrapped.set_task(task)
         base_env = GymWrapper(
             env,
             device=device,
@@ -57,7 +58,7 @@ def apply_env_transforms(env, max_episode_steps=1000, post_transforms=None):
         InitTracker(),
         StepCounter(max_episode_steps),
         DoubleToFloat(),
-        RewardSum(),
+        RewardSum(in_keys=["reward"]),
     ]
     
     all_transforms = base_transforms + post_transforms
@@ -79,56 +80,36 @@ def make_environment(cfg, logger=None, wrapper_pre_parallel_env=None, wrapper_po
         cfg=cfg, 
         from_pixels=cfg.env.pixel_input,
         pre_transforms=wrapper_pre_parallel_env
-    )
-    
+    )  
     parallel_env = ParallelEnv(
         cfg.collector.env_per_collector,
         EnvCreator(partial_train_fn),
         serial_for_single=True,
     )
     parallel_env.set_seed(cfg.env.seed)
-
-    # if cfg.env.pixel_input:
-    #     parallel_env = TransformedEnv(
-    #         parallel_env,
-    #         Compose(
-    #             PixelRenderTransform(
-    #                 out_keys=["pixels"],
-    #                 as_non_tensor=True
-    #             ),
-    #             ToTensorImage(keys=["pixels"]),    # trasforma in [C,H,W]
-    #             Resize(224, 224, keys=["pixels"]),
-    #             # CatFrames(N=4, keys=["pixels"])  # se vuoi stacking
-    #         )
-    #     )
     train_env = apply_env_transforms(
         parallel_env, 
         cfg.env.max_episode_steps, 
         post_transforms=wrapper_post_parallel_env
     )
 
-    # partial_eval_fn = functools.partial(
-    #     env_maker, 
-    #     cfg=cfg, 
-    #     from_pixels=cfg.logger.video or cfg.env.pixel_input,
-    #     pre_transforms=wrapper_pre_parallel_env
-    # )
-    
-    # trsf_clone = train_env.transform.clone()
-    # if cfg.logger.video:
-    #     trsf_clone.insert(
-    #         0, VideoRecorder(logger, tag="rendering/test", in_keys=["pixels"])
-    #     )
-        
-    # eval_env = TransformedEnv(
-    #     ParallelEnv(
-    #         cfg.collector.env_per_collector,
-    #         EnvCreator(partial_eval_fn),
-    #         serial_for_single=True,
-    #     ),
-    #     trsf_clone,
-    # )
-    eval_env = None
+    partial_eval_fn = functools.partial(
+        env_maker, 
+        cfg=cfg, 
+        from_pixels=cfg.logger.video or cfg.env.pixel_input,
+        pre_transforms=wrapper_pre_parallel_env
+    )    
+    trsf_clone = train_env.transform.clone()
+    base_eval_env = ParallelEnv(
+        cfg.collector.env_per_collector,
+        EnvCreator(partial_eval_fn),
+        serial_for_single=True,
+    )
+    base_eval_env.start() 
+    eval_env = TransformedEnv(
+        base_eval_env,
+        trsf_clone,
+    )
     return train_env, eval_env
 
 

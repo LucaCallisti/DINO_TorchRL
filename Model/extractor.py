@@ -46,7 +46,7 @@ class ExtractorTransform(Transform):
         return embeddings
 
     def transform_observation_spec(self, observation_spec):
-        old_spec = observation_spec[self.out_keys[0]]
+        old_spec = observation_spec[self.in_keys[0]]
         batch_shape = observation_spec.shape
 
         new_shape = batch_shape + self.embedding_shape
@@ -117,21 +117,27 @@ class DinoExtractor(nn.Module):
 class Attention_Pooling(nn.Module):
     def __init__(self, embed_dim: int, num_heads: int):
         super().__init__()
-        self.query_token = nn.Parameter(torch.randn(1, 1, embed_dim))
+        self.query_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
+        nn.init.normal_(self.query_token, std=0.02)
         self.cross_attention = nn.MultiheadAttention(
             embed_dim=embed_dim, 
             num_heads=num_heads, 
             batch_first=True
         )
-        self.norm = nn.LayerNorm(embed_dim)
+        self.norm_in = nn.LayerNorm(embed_dim)
+        self.norm_out = nn.LayerNorm(embed_dim)
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         B, N_frames, N_patch, D = x.shape
-        x_flat = x.reshape(B * N_frames, N_patch, D)
-        queries = self.query_token.expand(B * N_frames, -1, -1)
+        # x_flat = x.reshape(B, N_frames * N_patch, D).contiguous()   # messo i N_frame in N_patch e non in batch
+        x_flat = x.contiguous().reshape(B * N_frames, N_patch, D)
+
+        # x_flat = self.norm_in(x_flat)
+        queries = self.query_token.repeat(B * N_frames, 1, 1)
         pooled_frames = self.cross_attention(queries, x_flat, x_flat)[0]
-        pooled_frames = self.norm(pooled_frames + queries)
-        sequence_of_frames = pooled_frames.reshape(B, N_frames, D)
+        pooled_frames = self.norm_out(pooled_frames + queries)
+        sequence_of_frames = pooled_frames.reshape(B, N_frames, D)        
         state_representation = sequence_of_frames.reshape(B, N_frames * D)
+        # state_representation = pooled_frames.squeeze(1)
         return state_representation
 
 class CNN_backbone(nn.Module):
@@ -157,7 +163,7 @@ class CNN_backbone(nn.Module):
         B, N_frames, N_patch, D = x.shape
         H = W = int(N_patch ** 0.5)
         x = x.view(B, N_frames, H, W, D)
-        x = x.permute(0, 1, 4, 2, 3)
+        x = x.permute(0, 1, 4, 2, 3).contiguous()
         x_flat = x.reshape(B * N_frames, D, H, W)
 
         x_bottle = self.bottleneck(x_flat)
@@ -193,13 +199,15 @@ class Model(nn.Module):
         # LazyLinear: dimensione input definita al primo forward
         if self.model_input == 'State-Image':
             self.fc1_state = nn.LazyLinear(128)
-            self.fc1_pixels = nn.LazyLinear(128)  # aggiunto perché usi fc1_pixels nel forward
-            self.fc2 = nn.LazyLinear(512)
+            self.fc1_pixels = nn.LazyLinear(256)  # aggiunto perché usi fc1_pixels nel forward
+            self.fc2 = nn.LazyLinear(256+128)
+            self.norm_layer_fusion = nn.LayerNorm(256+128)
         else:
             self.fc1_pixels = nn.LazyLinear(512)
             self.fc2 = nn.LazyLinear(512)
 
         self.fc3 = nn.LazyLinear(128)
+        self.norm_img = nn.LayerNorm(256)
 
     def init_lazy_weights(self, sample_input):
         """Passa un input dummy per inizializzare i LazyLinear e applicare orthogonal"""
@@ -219,22 +227,27 @@ class Model(nn.Module):
         elif len(inputs) == 3:
             obs, pixels, actions = inputs
             obs = torch.cat([obs, actions], dim = 1)
+        
+        obs = obs.contiguous()
+        pixels = pixels.contiguous()
 
         x_image = self.backbone(pixels)
         x_image = self.fc1_pixels(x_image)
-        x_image = F.relu(x_image, inplace=True)
+        x_image = self.norm_img(x_image)
+        x_image = F.relu(x_image, inplace=False)
 
         if self.model_input == 'State-Image':
             x_state = self.fc1_state(obs)
-            x_state = F.relu(x_state, inplace=True)
+            x_state = F.relu(x_state, inplace=False)
             x = torch.cat([x_state, x_image], dim=1)
+            x = self.norm_layer_fusion(x)
         else:
             x = x_image
 
         x = self.fc2(x)
-        x = F.relu(x, inplace=True)
+        x = F.relu(x, inplace=False)
         
         x = self.fc3(x)
-        x = F.relu(x, inplace=True)
+        x = F.relu(x, inplace=False)
 
         return x

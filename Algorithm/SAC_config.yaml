@@ -15,7 +15,7 @@ env:
 # collector
 collector:
   total_frames: 1_000_000
-  init_random_frames: 5_000
+  init_random_frames: 20_000
   frames_per_batch: 256
   device:
   env_per_collector: 8
@@ -30,14 +30,16 @@ replay_buffer:
 
 # optim
 optim:
-  utd_ratio: 1.0  # UTD ratio 1.0: performs exactly one gradient update for every environment step, balancing learning frequency with data collection.
+  utd_ratio: 0.25  # More conservative updates to reduce critic overfit / actor collapse.
   gamma: 0.99
   loss_function: l2
   lr: 3.0e-4
+  alpha_lr: 1.0e-5
+  alpha_init: 1
+  alpha_target: 0.25 # multiplier
   weight_decay: 0.0
-  batch_size: 256
+  batch_size: 128
   target_update_polyak: 0.995
-  alpha_init: 1.0
   adam_eps: 1.0e-8
   seed: 100
 
@@ -49,12 +51,14 @@ logger:
   group_name: null
   exp_name: ${env.name}_SAC
   mode: online
-  eval_iter: 50_000
-  video: False
+  num_eval_episodes: 5
+  eval_iter: 25_000
+  video: True
+  grad_norm : True
 
 # compile
 compile:
-  compile: False            # Enable torch.compile for the update function
+  compile: True            # Enable torch.compile for the update function
   compile_mode: "reduce-overhead"          # Mode for torch.compile ("default", "reduce-overhead", etc.)
   cudagraphs: False         # Enable CudaGraphModule for faster GPU execution
 
@@ -63,5 +67,5 @@ network:
   hidden_sizes: [256, 256]
   activation: relu
   default_policy_scale: 1.0
-  scale_lb: 0.0001
+  scale_lb: 0.05
   device: 'cuda:0'

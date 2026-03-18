@@ -1,0 +1,7 @@
+{"time":"2026-03-17T14:26:15.810811176+01:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-03-17T14:26:16.250188333+01:00","level":"INFO","msg":"stream: created new stream","id":"e1t9qyyv"}
+{"time":"2026-03-17T14:26:16.250324726+01:00","level":"INFO","msg":"handler: started","stream_id":"e1t9qyyv"}
+{"time":"2026-03-17T14:26:16.250475179+01:00","level":"INFO","msg":"stream: started","id":"e1t9qyyv"}
+{"time":"2026-03-17T14:26:16.25053603+01:00","level":"INFO","msg":"writer: started","stream_id":"e1t9qyyv"}
+{"time":"2026-03-17T14:26:16.25053544+01:00","level":"INFO","msg":"sender: started","stream_id":"e1t9qyyv"}
+{"time":"2026-03-17T15:05:32.491086378+01:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/CLIP_RL/torchrl_example_sac/e1t9qyyv/file_stream\": read tcp 10.30.3.165:49514->35.186.228.49:443: read: connection reset by peer"}

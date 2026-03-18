@@ -1,0 +1,71 @@
+[2026-03-16 17:12:08,370][dinov3][INFO] - using base=100 for rope new
+[2026-03-16 17:12:08,370][dinov3][INFO] - using min_period=None for rope new
+[2026-03-16 17:12:08,370][dinov3][INFO] - using max_period=None for rope new
+[2026-03-16 17:12:08,370][dinov3][INFO] - using normalize_coords=separate for rope new
+[2026-03-16 17:12:08,370][dinov3][INFO] - using shift_coords=None for rope new
+[2026-03-16 17:12:08,370][dinov3][INFO] - using rescale_coords=2 for rope new
+[2026-03-16 17:12:08,370][dinov3][INFO] - using jitter_coords=None for rope new
+[2026-03-16 17:12:08,370][dinov3][INFO] - using dtype=fp32 for rope new
+[2026-03-16 17:12:08,371][dinov3][INFO] - using mlp layer as FFN
+[2026-03-16 17:19:36,858][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,859][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,860][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,861][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,867][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,868][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,869][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,869][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,869][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,869][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,869][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,869][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,869][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,870][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,870][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,870][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,870][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,870][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,870][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,870][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,871][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,872][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,872][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,872][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,872][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,872][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,872][asyncio][WARNING] - socket.send() raised exception.
+[2026-03-16 17:19:36,872][asyncio][WARNING] - socket.send() raised exception.

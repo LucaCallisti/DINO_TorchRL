@@ -1,0 +1,158 @@
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_base.py:1045: DeprecationWarning: SyncDataCollector has been deprecated and will be removed in v0.13. Please use Collector instead.
+  warnings.warn(
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/envs/batched_envs.py:2538: UserWarning: Sending a seeded ParallelEnv to another device requires re-seeding it. Re-seeding envs to [42, 1445067485, 3334094167, 3585780589, 2792652595, 3481998204, 395747745, 79072177].
+  warn(
+/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/torchrl/collectors/_single.py:911: UserWarning: total_frames (1000000) is not exactly divisible by frames_per_batch (256). This means 192 additional frames will be collected.To silence this message, set the environment variable RL_WARNINGS to False.
+  warnings.warn(
+  0%|▎                                                                                                                 | 2816/1000000 [00:40<3:46:57, 73.23it/s]
+[92m2026-03-16 14:40:14,992 [torchrl][INFO][0m    Initialized LazyTensorStorage with torch.Size([200000]) shape[92m [END][0m
+[92m2026-03-16 14:40:15,559 [torchrl][INFO][0m    collect took 3711.0319 msec (total =  3.7110 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:15,559 [torchrl][INFO][0m    rb - extend took 584.3346 msec (total =  0.5843 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:15,559 [torchrl][INFO][0m    train took 0.0017 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:19,413 [torchrl][INFO][0m    collect took 3777.7529 msec (total =  3.7778 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:19,413 [torchrl][INFO][0m    rb - extend took 70.9729 msec (total =  0.0710 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:19,413 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:23,072 [torchrl][INFO][0m    collect took 3579.6402 msec (total =  3.5796 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:23,072 [torchrl][INFO][0m    rb - extend took 74.2860 msec (total =  0.0743 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:23,072 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:26,802 [torchrl][INFO][0m    collect took 3651.8941 msec (total =  3.6519 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:26,802 [torchrl][INFO][0m    rb - extend took 73.8940 msec (total =  0.0739 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:26,802 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:30,743 [torchrl][INFO][0m    collect took 3860.3013 msec (total =  3.8603 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:30,743 [torchrl][INFO][0m    rb - extend took 74.6682 msec (total =  0.0747 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:30,743 [torchrl][INFO][0m    train took 0.0012 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:34,100 [torchrl][INFO][0m    collect took 3277.3752 msec (total =  3.2774 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:34,100 [torchrl][INFO][0m    rb - extend took 75.2149 msec (total =  0.0752 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:34,100 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:37,687 [torchrl][INFO][0m    collect took 3504.6089 msec (total =  3.5046 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:37,687 [torchrl][INFO][0m    rb - extend took 77.9870 msec (total =  0.0780 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:37,687 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:41,114 [torchrl][INFO][0m    collect took 3350.6572 msec (total =  3.3507 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:41,114 [torchrl][INFO][0m    rb - extend took 72.0856 msec (total =  0.0721 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:41,114 [torchrl][INFO][0m    train took 0.0017 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:44,517 [torchrl][INFO][0m    collect took 3325.4361 msec (total =  3.3254 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:44,517 [torchrl][INFO][0m    rb - extend took 73.6759 msec (total =  0.0737 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:44,518 [torchrl][INFO][0m    train took 0.0012 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:47,893 [torchrl][INFO][0m    collect took 3297.8303 msec (total =  3.2978 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:47,893 [torchrl][INFO][0m    rb - extend took 72.2201 msec (total =  0.0722 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:47,893 [torchrl][INFO][0m    train took 0.0012 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:51,420 [torchrl][INFO][0m    collect took 3449.2843 msec (total =  3.4493 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:51,420 [torchrl][INFO][0m    rb - extend took 73.6270 msec (total =  0.0736 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:51,420 [torchrl][INFO][0m    train took 0.0017 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:54,680 [torchrl][INFO][0m    collect took 3182.3626 msec (total =  3.1824 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:54,680 [torchrl][INFO][0m    rb - extend took 72.9094 msec (total =  0.0729 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:54,680 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:58,014 [torchrl][INFO][0m    collect took 3252.5282 msec (total =  3.2525 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:58,014 [torchrl][INFO][0m    rb - extend took 76.9355 msec (total =  0.0769 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:40:58,014 [torchrl][INFO][0m    train took 0.0017 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:01,223 [torchrl][INFO][0m    collect took 3130.4793 msec (total =  3.1305 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:01,223 [torchrl][INFO][0m    rb - extend took 73.5769 msec (total =  0.0736 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:01,223 [torchrl][INFO][0m    train took 0.0012 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:04,683 [torchrl][INFO][0m    collect took 3376.4234 msec (total =  3.3764 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:04,683 [torchrl][INFO][0m    rb - extend took 77.8935 msec (total =  0.0779 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:04,683 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:08,015 [torchrl][INFO][0m    collect took 3255.1169 msec (total =  3.2551 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:08,015 [torchrl][INFO][0m    rb - extend took 72.4254 msec (total =  0.0724 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:08,015 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:11,209 [torchrl][INFO][0m    collect took 3116.2431 msec (total =  3.1162 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:11,209 [torchrl][INFO][0m    rb - extend took 73.7057 msec (total =  0.0737 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:11,210 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:14,593 [torchrl][INFO][0m    collect took 3301.7101 msec (total =  3.3017 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:14,593 [torchrl][INFO][0m    rb - extend took 77.3966 msec (total =  0.0774 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:14,593 [torchrl][INFO][0m    train took 0.0014 msec (total =  0.0000 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:17,977 [torchrl][INFO][0m    collect took 3308.9287 msec (total =  3.3089 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:17,977 [torchrl][INFO][0m    rb - extend took 69.9177 msec (total =  0.0699 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:41:17,977 [torchrl][INFO][0m    train took 0.0017 msec (total =  0.0000 sec since last reset).[92m [END][0m
+skipping cudagraphs due to mutated inputs (23 instances)
+  1%|▊                                                                                                                | 6656/1000000 [08:13<66:34:35,  4.14it/s]
+[92m2026-03-16 14:42:37,144 [torchrl][INFO][0m    collect took 3276.0792 msec (total =  3.2761 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:42:37,144 [torchrl][INFO][0m    rb - extend took 73.3211 msec (total =  0.0733 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:42:37,144 [torchrl][INFO][0m    rb - sample took 53.9838 msec (total =  13.8199 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:42:37,144 [torchrl][INFO][0m    train took 75811.2102 msec (total =  75.8112 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:42:37,144 [torchrl][INFO][0m    update took 185.6888 msec (total =  47.5363 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:43:47,634 [torchrl][INFO][0m    collect took 3314.8832 msec (total =  3.3149 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:43:47,634 [torchrl][INFO][0m    rb - extend took 72.9308 msec (total =  0.0729 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:43:47,634 [torchrl][INFO][0m    rb - sample took 49.0236 msec (total =  12.5500 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:43:47,634 [torchrl][INFO][0m    train took 67093.9054 msec (total =  67.0939 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:43:47,634 [torchrl][INFO][0m    update took 157.1674 msec (total =  40.2348 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:44:56,075 [torchrl][INFO][0m    collect took 3160.5110 msec (total =  3.1605 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:44:56,076 [torchrl][INFO][0m    rb - extend took 73.9293 msec (total =  0.0739 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:44:56,076 [torchrl][INFO][0m    rb - sample took 47.0074 msec (total =  12.0339 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:44:56,076 [torchrl][INFO][0m    train took 65198.9515 msec (total =  65.1990 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:44:56,076 [torchrl][INFO][0m    update took 151.8137 msec (total =  38.8643 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:46:02,939 [torchrl][INFO][0m    collect took 3101.6569 msec (total =  3.1017 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:46:02,939 [torchrl][INFO][0m    rb - extend took 77.1418 msec (total =  0.0771 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:46:02,939 [torchrl][INFO][0m    rb - sample took 46.3538 msec (total =  11.8666 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:46:02,940 [torchrl][INFO][0m    train took 63677.8357 msec (total =  63.6778 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:46:02,940 [torchrl][INFO][0m    update took 146.4755 msec (total =  37.4977 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:47:09,985 [torchrl][INFO][0m    collect took 3428.9520 msec (total =  3.4290 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:47:09,986 [torchrl][INFO][0m    rb - extend took 73.1542 msec (total =  0.0732 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:47:09,986 [torchrl][INFO][0m    rb - sample took 44.5351 msec (total =  11.4010 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:47:09,986 [torchrl][INFO][0m    train took 63530.6072 msec (total =  63.5306 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:47:09,986 [torchrl][INFO][0m    update took 144.8800 msec (total =  37.0893 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:48:21,189 [torchrl][INFO][0m    collect took 3289.8972 msec (total =  3.2899 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:48:21,190 [torchrl][INFO][0m    rb - extend took 72.7870 msec (total =  0.0728 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:48:21,190 [torchrl][INFO][0m    rb - sample took 47.8421 msec (total =  12.2476 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:48:21,190 [torchrl][INFO][0m    train took 67832.3624 msec (total =  67.8324 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:48:21,190 [torchrl][INFO][0m    update took 160.4740 msec (total =  41.0813 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:49:31,982 [torchrl][INFO][0m    collect took 3233.5896 msec (total =  3.2336 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:49:31,982 [torchrl][INFO][0m    rb - extend took 77.1952 msec (total =  0.0772 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:49:31,982 [torchrl][INFO][0m    rb - sample took 46.3049 msec (total =  11.8541 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:49:31,982 [torchrl][INFO][0m    train took 67474.1936 msec (total =  67.4742 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:49:31,983 [torchrl][INFO][0m    update took 160.2655 msec (total =  41.0280 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:50:42,864 [torchrl][INFO][0m    collect took 3371.9323 msec (total =  3.3719 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:50:42,864 [torchrl][INFO][0m    rb - extend took 78.3165 msec (total =  0.0783 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:50:42,864 [torchrl][INFO][0m    rb - sample took 45.7705 msec (total =  11.7172 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:50:42,865 [torchrl][INFO][0m    train took 67424.4232 msec (total =  67.4244 sec since last reset).[92m [END][0m
+[92m2026-03-16 14:50:42,865 [torchrl][INFO][0m    update took 161.0986 msec (total =  41.2412 sec since last reset).[92m [END][0m
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 54, in <module>
+    main()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 51, in main
+    trainer.learn()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 192, in learn
+    losses[j] = loss_td.select("loss_actor", "loss_qvalue", "loss_alpha")
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 906, in __setitem__
+    self._set_at_str(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 2628, in _set_at_str
+    tensor_out = _set_item(
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 54, in <module>
+    main()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/home/l.callisti/DINO_Torch_RL/Code/main.py", line 51, in main
+    trainer.learn()
+  File "/home/l.callisti/DINO_Torch_RL/Code/Algorithm/SAC.py", line 192, in learn
+    losses[j] = loss_td.select("loss_actor", "loss_qvalue", "loss_alpha")
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 906, in __setitem__
+    self._set_at_str(
+  File "/home/l.callisti/CLIP+RL/CLIP_RL/lib/python3.10/site-packages/tensordict/_td.py", line 2628, in _set_at_str
+    tensor_out = _set_item(
+KeyboardInterrupt
