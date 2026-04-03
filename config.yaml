@@ -1,0 +1,115 @@
+# Hydra configuration for DINO SAC
+defaults:
+  - override hydra/hydra_logging: none
+  - override hydra/job_logging: none
+
+hydra:
+  run:
+    dir: ./outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  output_subdir: null
+  job:
+    chdir: false
+
+# =========================
+# ENVIRONMENT
+# =========================
+env:
+  name: reach-v3
+  library: metaworld
+  task: ""
+  render_mode: rgb_array
+  camera_name: corner2
+  max_steps: 500
+  seed: 42
+
+# =========================
+# PARALLELLIZATION
+# =========================
+parallel:
+  num_envs: 4
+
+# =========================
+# COLLECTOR
+# =========================
+collector:
+  total_frames: 100_000
+  frames_per_batch: 100
+  init_random_frames: 5_000
+  device: null  # Use device from main
+
+# =========================
+# REPLAY BUFFER
+# =========================
+replay_buffer:
+  size: 100_000
+  batch_size: 256
+  device: cpu
+
+# =========================
+# SAC - ALGORITHM CONFIG
+# =========================
+sac:
+  # Network architecture
+  actor:
+    hidden_layers: [256, 256, 256]
+    activation: relu
+  critic:
+    hidden_layers: [256, 256, 256]
+    activation: relu
+  
+  # Loss and optimization
+  alpha_init: 0.5
+  gamma: 0.99
+  tau: 0.005  # soft update coefficient
+  num_qvalue_nets: 2
+  
+  # Optimization
+  lr: 3.0e-4
+  optim_steps_per_batch: 10
+  weight_decay: 0.0
+
+# =========================
+# FEATURE EXTRACTOR (DINO)
+# =========================
+extractor:
+  enabled: true
+  model_name: vits16_ft             # Options: 'vits16_ft', 'vits16', 'vitb16'
+  output_type: Attention_Pooling    # Options: 'Attention_Pooling', 'cls'
+  frame_skip: 2
+  frame_stack: 2
+  resize_h: 224
+  resize_w: 224
+
+# =========================
+# NETWORK
+# =========================
+network:
+  device: cuda:1  # cuda or cpu
+
+# =========================
+# LOGGING & MONITORING
+# =========================
+logging:
+  log_interval: 1_000
+  test_interval: 10_000 #10_000
+  checkpoint_interval: 50_000
+  test_num_episodes: 1
+  enable_video: false
+  
+  # WandB
+  wandb:
+    project: SAC_DINO
+    entity: CLIP_RL
+    exp_name: reach-v3_dino
+    mode: online
+
+# =========================
+# DEVICE
+# =========================
+device: cuda:1  # network device
+env_device: cpu  # environment device
+
+# =========================
+# RANDOM SEED
+# =========================
+seed: 42
