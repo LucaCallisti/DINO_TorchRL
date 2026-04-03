@@ -1,7 +1,0 @@
-{"time":"2026-03-13T13:19:42.91175332+01:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
-{"time":"2026-03-13T13:19:43.333017692+01:00","level":"INFO","msg":"stream: created new stream","id":"48e7zzao"}
-{"time":"2026-03-13T13:19:43.333127544+01:00","level":"INFO","msg":"handler: started","stream_id":"48e7zzao"}
-{"time":"2026-03-13T13:19:43.333276696+01:00","level":"INFO","msg":"stream: started","id":"48e7zzao"}
-{"time":"2026-03-13T13:19:43.333347657+01:00","level":"INFO","msg":"writer: started","stream_id":"48e7zzao"}
-{"time":"2026-03-13T13:19:43.333344177+01:00","level":"INFO","msg":"sender: started","stream_id":"48e7zzao"}
-{"time":"2026-03-13T16:46:55.514242902+01:00","level":"INFO","msg":"api: retrying HTTP error","status":502,"url":"https://api.wandb.ai/files/CLIP_RL/torchrl_example_sac/48e7zzao/file_stream","body":"\n<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<title>502 Server Error</title>\n</head>\n<body text=#000000 bgcolor=#ffffff>\n<h1>Error: Server Error</h1>\n<h2>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.</h2>\n<h2></h2>\n</body></html>\n"}
