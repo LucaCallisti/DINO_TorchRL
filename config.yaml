@@ -79,12 +79,13 @@ extractor:
   frame_stack: 2
   resize_h: 224
   resize_w: 224
+  output_layer: -1
 
 # =========================
 # NETWORK
 # =========================
 network:
-  device: cuda:1  # cuda or cpu
+  device: cuda:3  # cuda or cpu
 
 # =========================
 # LOGGING & MONITORING
@@ -106,7 +107,7 @@ logging:
 # =========================
 # DEVICE
 # =========================
-device: cuda:1  # network device
+device: cuda:3  # network device
 env_device: cpu  # environment device
 
 # =========================

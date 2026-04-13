@@ -6,6 +6,7 @@ outputs/
 .venv/
 venv/
 env/
+DINO/
 
 # Python cache
 *.pyc

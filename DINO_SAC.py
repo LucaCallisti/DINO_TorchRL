@@ -30,6 +30,7 @@ from wrappers import ToCHWTransform, SelectObservationTransform
 from extractor import ExtractorTransform, DinoExtractor, Model
 import numpy as np
 import hydra
+from omegaconf import OmegaConf
 
 # =========================
 # CUSTOM VIDEO RECORDERS
@@ -96,7 +97,7 @@ def setup_env(cfg):
         device='cpu'
     )
 
-    extractor = DinoExtractor(device=cfg.network.device, model_name=cfg.extractor.model_name, output=cfg.extractor.output_type)
+    extractor = DinoExtractor(device=cfg.network.device, model_name=cfg.extractor.model_name, output=cfg.extractor.output_type, output_layer=cfg.extractor.output_layer)
     transforms = [
         InitTracker(),
         RewardSum(in_keys=["reward"], out_keys=["reward_sum"]),
@@ -118,7 +119,7 @@ def setup_test_env(cfg, task, ml1, logger):
         camera_name=cfg.env.camera_name
     )
     gym_env.unwrapped.set_task(task)
-    extractor = DinoExtractor(device=cfg.network.device, model_name=cfg.extractor.model_name, output=cfg.extractor.output_type)
+    extractor = DinoExtractor(device=cfg.network.device, model_name=cfg.extractor.model_name, output=cfg.extractor.output_type, output_layer=cfg.extractor.output_layer)
     transforms = [
         StepCounter(max_steps=cfg.env.max_steps, truncated_key="truncated", step_count_key="step_count"),
         FrameSkipTransform(frame_skip=2),
@@ -364,7 +365,10 @@ def main(cfg):
     logger = WandbLogger(
         project=cfg.logging.wandb.project,
         entity=cfg.logging.wandb.entity,
-        exp_name=f'{cfg.extractor.model_name}_{cfg.extractor.output_type}_{cfg.env.name}',
+        exp_name=f'{cfg.extractor.model_name}_layer_{cfg.extractor.output_layer}_{cfg.extractor.output_type}_{cfg.env.name}',
+        config=OmegaConf.to_container(cfg, resolve=True),
+        tags=[cfg.extractor.model_name, cfg.extractor.output_type, cfg.env.name, f'layer_{cfg.extractor.output_layer}'],
+        save_code=True,
     )
     
     test_env = setup_test_env(cfg, task, ml1, logger)

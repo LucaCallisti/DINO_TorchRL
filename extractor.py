@@ -67,12 +67,12 @@ class ExtractorTransform(Transform):
     
 class DinoExtractor(nn.Module):
     MODELS = {
-        "vits16_ft": ("dinov3_vits16",  "/home/l.callisti/DINO_Torch_RL/Code/DINO/dino_finetuned_multicrop_200e.pth",  384),
-        "vits16":  ("dinov3_vits16",  "/home/l.callisti/DINO_Torch_RL/Code/DINO/dinov3_vits16_pretrain_lvd1689m-08c60483.pth",  384),
-        "vitb16":  ("dinov3_vitb16",  "/home/l.callisti/DINO_Torch_RL/Code/DINO/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth",  768),
+        "vits16_ft": ("dinov3_vits16",  "/home/l.callisti/DINO_RL/DINO/dino_finetuned_multicrop_200e.pth",  384),
+        "vits16":  ("dinov3_vits16",  "/home/l.callisti/DINO_RL/DINO/dinov3_vits16_pretrain_lvd1689m-08c60483.pth",  384),
+        "vitb16":  ("dinov3_vitb16",  "/home/l.callisti/DINO_RL/DINO/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth",  768),
     }
 
-    def __init__(self, device: torch.device, model_name: str = "vitb16", output : str = 'cls'):
+    def __init__(self, device: torch.device, model_name: str = "vitb16", output : str = 'cls', output_layer: int = -1):
         super().__init__()
         self.device = device
         self.output = output
@@ -81,7 +81,7 @@ class DinoExtractor(nn.Module):
         current_file_path = Path(__file__).resolve()
         
         self.model = torch.hub.load(
-            '/home/l.callisti/DINO_Torch_RL/Code/dinov3',
+            '/home/l.callisti/DINO_RL/DINO/dinov3',
             hub_name,
             source="local",
             weights=weights_path
@@ -89,6 +89,8 @@ class DinoExtractor(nn.Module):
         self.model.eval()
         for param in self.model.parameters():
             param.requires_grad = False
+        self.total_layer = len(self.model.blocks)
+        self.output_layer = output_layer
         self.model = torch.compile(self.model).to(device)
 
         self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
@@ -103,14 +105,20 @@ class DinoExtractor(nn.Module):
             init_shape = img.shape # (B, N_frames, C, H, W)
             image = img.reshape(-1, init_shape[-3], init_shape[-2], init_shape[-1])
             image = (image - self.mean) / self.std
-            features = self.model.forward_features(image, masks=None)
-            if self.output == 'cls':
-                output = features['x_norm_clstoken']
-                output = output.reshape(init_shape[0], init_shape[1], -1)
-                output = output.reshape(init_shape[0], -1)
+
+            if 0 < self.output_layer < self.total_layer:
+                features = self.model.get_intermediate_layers(image, n=[self.output_layer], return_class_token=True)
+                output_cls = features[0][1]
+                output_patch = features[0][0]
             else:
-                output = features['x_norm_patchtokens']
-                output = output.reshape(init_shape[0], init_shape[1], output.shape[-2], output.shape[-1])
+                features = self.model.forward_features(image, masks=None)
+                output_cls = features['x_norm_clstoken']
+                output_patch = features['x_norm_patchtokens']
+            if self.output == 'cls':
+                output_cls = output_cls.reshape(init_shape[0], init_shape[1], -1)
+                output = output_cls.reshape(init_shape[0], -1)
+            else:
+                output = output_patch.reshape(init_shape[0], init_shape[1], output_patch.shape[-2], output_patch.shape[-1])
         return output
 
 
