@@ -82,14 +82,14 @@ def setup_env(cfg):
         )
         task = ml1.train_tasks[0]
         gym_env.unwrapped.set_task(task)        
-        gym_wrapperd = GymWrapper(gym_env, device=cfg.env_device)
+        gym_wrapperd = GymWrapper(gym_env, device=cfg.env_device, allow_done_after_reset=True)
         individual_transforms = [
             StepCounter(max_steps=cfg.env.max_steps),
             FrameSkipTransform(frame_skip=2),
             PixelRenderTransform(out_keys=["pixels"], as_non_tensor=True),
             ToCHWTransform(),
         ]
-        return TransformedEnv(gym_wrapperd, Compose(*individual_transforms)).to(cfg.device)
+        return TransformedEnv(gym_wrapperd, Compose(*individual_transforms))
     base_env = ParallelEnv(
         num_workers=cfg.parallel.num_envs,
         create_env_fn=make_env,
@@ -137,7 +137,7 @@ def setup_test_env(cfg, task, ml1, logger):
     ]
     
     test_env = TransformedEnv(
-        GymWrapper(gym_env, device=cfg.device),
+        GymWrapper(gym_env, device=cfg.device, allow_done_after_reset=True),
         Compose(*transforms))
     # ).to(cfg.device)
     

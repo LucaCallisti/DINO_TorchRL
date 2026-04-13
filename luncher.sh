@@ -1,6 +1,6 @@
 model_names=(vits16 vits16_ft)
 output_types=(Attention_Pooling cls)
-output_layer=(11 10 8)
+output_layer=(11 10 8 6)
 
 for output_layer in "${output_layer[@]}"; do
     for model_name in "${model_names[@]}"; do
